@@ -6,14 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.Provider;
-import java.security.Security;
 import java.security.Signature;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
