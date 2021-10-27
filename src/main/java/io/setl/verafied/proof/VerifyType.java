@@ -18,29 +18,15 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
-
-import java.security.GeneralSecurityException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
-
+package io.setl.verafied.proof;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * How an input was verified.
+ *
+ * @author Simon Greatrix on 10/11/2020.
  */
-public class PublicKeyJwkOkpTest {
-
-
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
-  }
-
-
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
-  }
-
+public enum VerifyType {
+  CREDENTIAL,
+  PRESENTATION,
+  SIGNED_JSON
 }

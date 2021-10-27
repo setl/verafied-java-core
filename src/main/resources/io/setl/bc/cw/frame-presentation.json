@@ -1,0 +1,26 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "@explicit": true,
+  "@omitDefault": true,
+  "@type": "VerifiablePresentation",
+  "holder": {},
+  "id": {},
+  "issuer": {},
+  "proof": {},
+  "type": {},
+  "verifiableCredential": [{
+    "@type": "VerifiableCredential",
+    "@explicit": true,
+    "@omitDefault": true,
+    "credentialStatus": {},
+    "credentialSubject": {},
+    "expirationDate": {},
+    "id": {},
+    "issuanceDate": {},
+    "issuer": {},
+    "proof": {},
+    "type": {}
+  }]
+}

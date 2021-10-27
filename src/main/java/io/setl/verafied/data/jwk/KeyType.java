@@ -20,27 +20,31 @@
 
 package io.setl.verafied.data.jwk;
 
-import java.security.GeneralSecurityException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * @author Simon Greatrix on 27/06/2020.
  */
-public class PublicKeyJwkOkpTest {
+public enum KeyType {
+  /** Octet Key Pair - used for Ed25519. See RFC 8037 */
+  OKP,
+
+  /** Elliptic Curve. See RFC 7517. */
+  EC,
+
+  /** Rivest-Shamir-Adelman key. See RFC 7517. */
+  RSA;
 
 
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
+  @JsonCreator
+  public static KeyType fromId(String id) {
+    return KeyType.valueOf(id.toUpperCase());
   }
 
 
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
+  @JsonValue
+  public String id() {
+    return name().toLowerCase();
   }
-
 }

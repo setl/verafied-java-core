@@ -18,29 +18,29 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
-
-import java.security.GeneralSecurityException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
-
+package io.setl.verafied.did;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * @author Simon Greatrix on 23/10/2021.
  */
-public class PublicKeyJwkOkpTest {
+public class DidStoreException extends Exception {
 
-
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
+  public DidStoreException() {
   }
 
 
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
+  public DidStoreException(String message) {
+    super(message);
+  }
+
+
+  public DidStoreException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+
+  public DidStoreException(Throwable cause) {
+    super(cause);
   }
 
 }

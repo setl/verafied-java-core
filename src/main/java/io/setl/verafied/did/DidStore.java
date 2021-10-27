@@ -18,29 +18,15 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
-
-import java.security.GeneralSecurityException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
-
+package io.setl.verafied.did;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * A mechanism for retrieving Decentralized Identifier documents from some storage.
+ *
+ * @author Simon Greatrix on 23/10/2021.
  */
-public class PublicKeyJwkOkpTest {
+public interface DidStore {
 
-
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
-  }
-
-
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
-  }
+  DecentralizedIdentifier fetch(DidId didId) throws DidStoreException;
 
 }

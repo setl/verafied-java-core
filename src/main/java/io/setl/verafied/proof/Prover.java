@@ -18,29 +18,25 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
+package io.setl.verafied.proof;
 
 import java.security.GeneralSecurityException;
+import javax.json.JsonObject;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
-
+import io.setl.verafied.data.Proof;
+import io.setl.verafied.data.Provable;
+import io.setl.verafied.data.TypedKeyPair;
+import io.setl.verafied.did.DidStoreException;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * @author Simon Greatrix on 03/10/2020.
  */
-public class PublicKeyJwkOkpTest {
+public interface Prover {
+
+  void attachProof(ProofContext context, Provable input, TypedKeyPair keyPair) throws GeneralSecurityException;
 
 
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
-  }
-
-
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
-  }
+  VerifyOutput verifyProof(VerifyContext context, JsonObject input, Proof proof)
+      throws GeneralSecurityException, DidStoreException;
 
 }

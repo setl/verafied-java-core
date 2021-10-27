@@ -18,29 +18,29 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
+package io.setl.verafied.data;
 
-import java.security.GeneralSecurityException;
+import javax.json.JsonObject;
+import javax.validation.Valid;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.setl.verafied.data.Proof;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * @author Simon Greatrix on 27/10/2020.
  */
-public class PublicKeyJwkOkpTest {
+public interface Provable {
 
+  JsonObject asJson();
 
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
-  }
+  @JsonProperty("proof")
+  @JsonInclude(Include.NON_NULL)
+  @Valid
+  Proof getProof();
 
-
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
-  }
+  void setProof(Proof proof);
 
 }

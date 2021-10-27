@@ -13,33 +13,23 @@
  *   GNU Affero General Public License for more details.
  *
  *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>;.
  *
  * </notice>
  */
-
-package io.setl.verafied.did;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+package io.setl.verafied.data.credential;
 
 /**
- * @author Simon Greatrix on 16/07/2020.
+ * A creator of the "credentialStatus" entries for credentials. This field indicates how one may test if a credential has been revoked.
+ *
+ * @author Simon Greatrix on 27/10/2021.
  */
-public class KeyUsageTest {
+public interface CredentialStatusFactory {
 
-  @Test
-  public void forId() {
-    for (KeyUsage usage : KeyUsage.values()) {
-      assertEquals(usage, KeyUsage.forId(usage.getId()));
-    }
-  }
-
-
-  @Test(expected = IllegalArgumentException.class)
-  public void notForId() {
-    KeyUsage.forId("WIBBLE!!!!");
-  }
+  /**
+   * Set a "credentialStatus" value on the supplied credential. Additional modifications may be made to the credential to facilitate the status check. This
+   * includes setting an expiration date, or an ID.
+   */
+  void setStatus(Credential credential);
 
 }

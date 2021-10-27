@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  io.setl.chain.cw.configuration.CwSpringConfiguration,\
+  io.setl.chain.cw.configuration.CwEndpointConfiguration

@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "setl": "https://setl.io/cw/credentials/proof/canonicalJsonWithJws#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "CanonicalJsonWithJws": {
+      "@id": "https://setl.io/cw/credentials/proof/canonicalJsonWithJws",
+      "@context": {
+        "created": {
+          "@id": "setl:created",
+          "@type": "xsd:dateTime"
+        },
+        "jws": {
+          "@id": "setl:jws",
+          "@type": "xsd:string"
+        },
+        "salt": {
+          "@id": "setl:salt",
+          "@type": "xsd:string"
+        },
+        "verificationMethod": {
+          "@id": "setl:verificationMethod",
+          "@type": "@id"
+        }
+      }
+    }
+  }
+}

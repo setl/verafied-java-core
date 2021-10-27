@@ -18,29 +18,32 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
-
-import java.security.GeneralSecurityException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
-
+package io.setl.verafied.proof;
 
 /**
- * @author Simon Greatrix on 04/07/2020.
+ * A checked exception wrapping a VerifyOutput failure.
+ *
+ * @author Simon Greatrix on 22/10/2020.
  */
-public class PublicKeyJwkOkpTest {
+public class VerifyOutputException extends Exception {
+
+  private final VerifyOutput verifyOutput;
 
 
-  @Test
-  public void test25519() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED25519);
+  public VerifyOutputException(VerifyOutput verifyOutput) {
+    super(verifyOutput.getDetail());
+    this.verifyOutput = verifyOutput;
   }
 
 
-  @Test
-  public void test448() throws GeneralSecurityException, JsonProcessingException {
-    PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.ED448);
+  public VerifyOutputException(String detail, VerifyType verifyType) {
+    super(detail);
+    this.verifyOutput = VerifyOutput.fail(detail, verifyType);
+  }
+
+
+  public VerifyOutput getVerifyOutput() {
+    return verifyOutput;
   }
 
 }
