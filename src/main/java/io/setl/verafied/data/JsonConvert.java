@@ -58,6 +58,22 @@ public class JsonConvert {
 
 
   /**
+   * Convert JSON text to a POJO.
+   *
+   * @param json the JSON
+   * @param type the required POJO type
+   * @param <T>  the required POJO type
+   *
+   * @return the POJO
+   *
+   * @throws JsonProcessingException if JSON cannot be converted
+   */
+  public static <T> T toInstance(String json, Class<T> type) throws JsonProcessingException {
+    return OBJECT_MAPPER.readValue(json, type);
+  }
+
+
+  /**
    * Convert a POJO to a JsonStructure.
    *
    * @param object the POJO to convert
@@ -67,6 +83,7 @@ public class JsonConvert {
   public static JsonStructure toJson(Object object) {
     return (JsonStructure) Convert.toJson(OBJECT_MAPPER.<JsonNode>valueToTree(object));
   }
+
 
   static {
     OBJECT_MAPPER = new ObjectMapper();

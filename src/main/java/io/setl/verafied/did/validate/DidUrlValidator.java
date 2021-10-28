@@ -110,16 +110,16 @@ public class DidUrlValidator implements ConstraintValidator<DidUrl, URI> {
     String part = value.getRawFragment();
     if (part != null) {
       if (hasFragment == Has.NO) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.fragmentPresent}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.fragmentPresent}");
         return false;
       }
       if (!DID_FRAGMENT.matcher(part).matches()) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.badFragment}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.badFragment}");
         return false;
       }
     } else {
       if (hasFragment == Has.YES) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.missingFragment}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.missingFragment}");
         return false;
       }
     }
@@ -131,22 +131,22 @@ public class DidUrlValidator implements ConstraintValidator<DidUrl, URI> {
     int p = part.indexOf('/');
     if (p != -1) {
       if (hasPath == Has.NO) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.pathPresent}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.pathPresent}");
         return false;
       }
       String f = part.substring(p);
       // we have an absolute path
       if (!PATH_ABEMPTY.matcher(f).matches()) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.badPath}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.badPath}");
         return false;
       }
       if (pathPrefix != null && !f.startsWith(pathPrefix)) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.pathPrefix}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.pathPrefix}");
         return false;
       }
     } else {
       if (hasPath == Has.NO) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.missingPath}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.missingPath}");
         return false;
       }
     }
@@ -159,19 +159,19 @@ public class DidUrlValidator implements ConstraintValidator<DidUrl, URI> {
     int p = part.indexOf('?');
     if (p != -1) {
       if (hasQuery == Has.NO) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.queryPresent}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.queryPresent}");
         return -1;
       }
       String f = part.substring(p + 1);
       // fragments and queries validate on the same reg-exp
       if (!DID_FRAGMENT.matcher(f).matches()) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.badQuery}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.badQuery}");
         return -1;
       }
       return p;
     } else {
       if (hasQuery == Has.YES) {
-        addViolation(context, "{io.setl.chain.cw.data.validate.DidUrl.missingQuery}");
+        addViolation(context, "{io.setl.verafied.did.validate.DidUrl.missingQuery}");
         return -1;
       }
     }

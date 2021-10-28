@@ -152,7 +152,7 @@ public class VerifyContext extends SharedContext {
     if (verificationMethod == null) {
       throw new IllegalStateException("Verification method has not been set yet.");
     }
-    return verificationMethod;
+    return verificationMethod.copy();
   }
 
 

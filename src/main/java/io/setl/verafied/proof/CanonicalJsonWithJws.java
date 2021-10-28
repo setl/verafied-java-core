@@ -39,6 +39,8 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import io.setl.json.CJObject;
 import io.setl.verafied.CredentialConstants;
 import io.setl.verafied.data.Proof;
@@ -99,6 +101,7 @@ public class CanonicalJsonWithJws implements Prover {
   }
 
 
+  @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
   @Override
   public VerifyOutput verifyProof(VerifyContext context, JsonObject input, Proof proof)
       throws GeneralSecurityException, DidStoreException {

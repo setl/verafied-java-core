@@ -26,7 +26,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -73,6 +72,23 @@ public class Proof {
   private URI verificationMethod;
 
 
+  public Proof() {
+  }
+
+
+  /**
+   * Create a copy.
+   *
+   * @param toCopy the instance to copy
+   */
+  public Proof(Proof toCopy) {
+    properties.putAll(toCopy.properties);
+    created = toCopy.created;
+    type = toCopy.type;
+    verificationMethod = toCopy.verificationMethod;
+  }
+
+
   /**
    * Get a value from this proof's properties, if it is of the correct type.
    *
@@ -106,7 +122,7 @@ public class Proof {
 
   @JsonAnyGetter
   public Map<String, Object> getProperties() {
-    return properties;
+    return Map.copyOf(properties);
   }
 
 

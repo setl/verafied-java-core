@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.edec.EdECObjectIdentifiers;
@@ -90,10 +91,11 @@ public class PublicKeyJwkFactory {
 
 
   /**
-   * Set the factory mappings. The provided map replaces the one used by this class, so further modifications of it will be reflected here.
+   * Set the factory mappings. The provided map replaces the existing ones, so further modifications of it will be reflected here.
    *
    * @param newFactories the factory mappings
    */
+  @SuppressFBWarnings("EI_EXPOSE_STATIC_REP2") // deliberate
   public static void setFactories(ConcurrentMap<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> newFactories) {
     factories = Objects.requireNonNull(newFactories);
   }

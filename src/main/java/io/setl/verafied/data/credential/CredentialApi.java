@@ -148,7 +148,7 @@ public class CredentialApi {
    * @return true if OK
    */
   private static boolean verifyStatus(Credential credential, RevocationChecker revocationStore, AtomicReference<String> holder) {
-    if (credential.getCredentialStatus() != null
+    if (credential.getCredentialStatus() != null && revocationStore != null
         && revocationStore.test(credential.getCredentialStatus().getType(), credential.getIssuer(), credential.getId())
     ) {
       // has been revoked

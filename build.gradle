@@ -1,10 +1,11 @@
 
 plugins {
   id "java"
-  id "com.github.spotbugs" version "2.0.0"
+  id "com.github.spotbugs" version "4.7.9"
   id 'com.palantir.git-version' version '0.12.3'
 }
 
+apply plugin: 'com.github.spotbugs'
 apply plugin: 'checkstyle'
 apply plugin: 'maven-publish'
 
@@ -31,8 +32,11 @@ dependencies {
   implementation 'io.setl:canonical-json:2.1'
   implementation 'javax.validation:validation-api:2.0.1.Final'
   implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
-  implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+  implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.0'
+  implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
   implementation 'io.swagger.core.v3:swagger-annotations:2.1.11'
+  implementation 'com.google.code.findbugs:annotations:3.0.1'
 
   testImplementation group: 'junit', name: 'junit', version: '4.12'
   testRuntimeOnly group: 'junit', name: 'junit', version: '4.12'
@@ -42,10 +46,18 @@ checkstyle {
   toolVersion = "8.41.1"
   configFile = rootProject.file('config/checkstyle/checkstyle.xml')
 }
+checkstyleTest {
+  enabled = false
+}
 
 spotbugs {
-  toolVersion = '3.1.12'
-  sourceSets = [sourceSets.main]
   ignoreFailures = true
-  reportsDir = file("$project.buildDir/findbugsReports")
+  effort = 'max'
+}
+spotbugsMain {
+  reports {
+    html {
+      enabled = true
+    }
+  }
 }

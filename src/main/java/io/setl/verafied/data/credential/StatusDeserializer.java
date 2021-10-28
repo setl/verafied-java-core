@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A Jackson deserializer for credential status definitions. No such mechanisms are defined in this library implementers must register their implementation here
@@ -46,6 +47,12 @@ public class StatusDeserializer extends StdDeserializer<CredentialStatus> {
   }
 
 
+  /**
+   * Set the type mappings. The provided map replaces the existing one, so further modification of it will be reflected here.
+   *
+   * @param mappings the new mappings
+   */
+  @SuppressFBWarnings("EI_EXPOSE_STATIC_REP2") // deliberate
   public static void setTypeMappings(ConcurrentMap<String, Class<? extends CredentialStatus>> mappings) {
     typeNameMapping = mappings;
   }

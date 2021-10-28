@@ -57,14 +57,25 @@ public class PublicKeyJwkOkp extends PublicKeyJwk {
   }
 
 
-  public PublicKeyJwkOkp(String curve, byte[] octets) {
-    this.curve = curve;
-    x = Base64.getUrlEncoder().encodeToString(octets);
+  /**
+   * Copy constructor.
+   *
+   * @param toCopy the instance to copy
+   */
+  public PublicKeyJwkOkp(PublicKeyJwkOkp toCopy) {
+    super(toCopy);
+    curve = toCopy.curve;
+    x = toCopy.x;
   }
 
 
   public PublicKeyJwkOkp() {
     // do nothing
+  }
+
+
+  public PublicKeyJwkOkp copy() {
+    return new PublicKeyJwkOkp(this);
   }
 
 
@@ -118,7 +129,7 @@ public class PublicKeyJwkOkp extends PublicKeyJwk {
     } catch (IOException ioe) {
       throw new InvalidKeySpecException();
     } catch (NoSuchAlgorithmException e) {
-      throw new InvalidKeySpecException("Unknown curve: " + curve, e);
+      throw new InvalidKeySpecException("Unknown curve: " + logSafe(curve), e);
     }
 
     throw new InvalidKeySpecException("Unknown curve: " + logSafe(curve));

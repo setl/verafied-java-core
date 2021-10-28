@@ -49,7 +49,6 @@ public class SigningAlgorithmTest {
     algsToTest.remove(SigningAlgorithm.PS512);
     for (SigningAlgorithm alg : algsToTest) {
       KeyPair keyPair = alg.createKeyPair();
-      System.out.println(keyPair.getPublic());
       Signature signature = alg.createSignature();
       signature.initSign(keyPair.getPrivate());
       signature.update(message);

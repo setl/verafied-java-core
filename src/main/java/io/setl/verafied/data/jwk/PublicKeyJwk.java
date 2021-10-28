@@ -37,6 +37,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import io.setl.verafied.CredentialConstants;
+import io.setl.verafied.data.JsonConvert;
 import io.setl.verafied.did.validate.DidUrl;
 import io.setl.verafied.did.validate.DidUrl.Has;
 
@@ -62,7 +63,31 @@ public abstract class PublicKeyJwk {
   private URI keyId;
 
   /** The expected key use. Typically, "sig" for signing. */
-  private String use = "sig";
+  private String use;
+
+
+  public PublicKeyJwk() {
+    use = "sig";
+  }
+
+
+  /**
+   * Copy constructor.
+   *
+   * @param toCopy the instance to copy
+   */
+  public PublicKeyJwk(PublicKeyJwk toCopy) {
+    keyId = toCopy.keyId;
+    use = toCopy.use;
+  }
+
+
+  /**
+   * Create a copy of this.
+   *
+   * @return a new copy of this
+   */
+  public abstract PublicKeyJwk copy();
 
 
   @Override
@@ -126,6 +151,11 @@ public abstract class PublicKeyJwk {
 
   public void setUse(String use) {
     this.use = use;
+  }
+
+
+  public String toString() {
+    return JsonConvert.toJson(this).toString();
   }
 
 }

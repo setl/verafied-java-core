@@ -29,6 +29,7 @@ import java.time.Clock;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
+import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -58,6 +59,9 @@ public class CredentialConstants {
   private static Clock clock = Clock.systemUTC();
 
   private static UnaryOperator<String> logSafe = UnaryOperator.identity();
+
+  /** Standard context attached to JSON-LD documents which we generate. */
+  private static JsonValue standardContext = JSON_PROVIDER.createArrayBuilder().add(CREDENTIAL_CONTEXT).build();
 
 
   /**
@@ -99,6 +103,16 @@ public class CredentialConstants {
     }
 
     return sr;
+  }
+
+
+  /**
+   * Get the standard context for new credentials.
+   *
+   * @return the standard context
+   */
+  public static JsonValue getStandardContext() {
+    return standardContext;
   }
 
 
@@ -149,6 +163,11 @@ public class CredentialConstants {
    */
   public static void setSecureRandom(SecureRandom secureRandom) {
     SECURE_RANDOM.set(Objects.requireNonNull(secureRandom));
+  }
+
+
+  public static void setStandardContext(JsonValue newContext) {
+    standardContext = Objects.requireNonNull(newContext);
   }
 
 

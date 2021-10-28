@@ -76,8 +76,25 @@ public class PublicKeyJwkRsa extends PublicKeyJwk {
   }
 
 
+  /**
+   * Copy constructor.
+   *
+   * @param toCopy the instance to copy
+   */
+  public PublicKeyJwkRsa(PublicKeyJwkRsa toCopy) {
+    super(toCopy);
+    exponent = toCopy.exponent;
+    modulus = toCopy.modulus;
+  }
+
+
   public PublicKeyJwkRsa() {
     // do nothing
+  }
+
+
+  public PublicKeyJwkRsa copy() {
+    return new PublicKeyJwkRsa(this);
   }
 
 

@@ -115,7 +115,7 @@ public class Presentation implements Provable {
       description = "The cryptographic proof associated with this."
   )
   public Proof getProof() {
-    return proof;
+    return proof != null ? new Proof(proof) : null;
   }
 
 
@@ -133,7 +133,7 @@ public class Presentation implements Provable {
       description = "The credentials being presented"
   )
   public List<Credential> getVerifiableCredential() {
-    return verifiableCredential;
+    return List.copyOf(verifiableCredential);
   }
 
 
@@ -176,7 +176,7 @@ public class Presentation implements Provable {
 
 
   public void setProof(Proof proof) {
-    this.proof = proof;
+    this.proof = proof != null ? new Proof(proof) : null;
   }
 
 
@@ -192,7 +192,7 @@ public class Presentation implements Provable {
 
 
   public void setVerifiableCredential(List<Credential> verifiableCredential) {
-    this.verifiableCredential = verifiableCredential;
+    this.verifiableCredential = List.copyOf(verifiableCredential);
   }
 
 }

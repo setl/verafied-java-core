@@ -22,6 +22,8 @@ package io.setl.verafied.data.jwk;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -41,8 +43,8 @@ public class PublicKeyJwkFactoryTest {
     PublicKeyJwk jwk = PublicKeyJwkFactory.from(keyPair.getPublic());
     JsonStructure json = JsonConvert.toJson(jwk);
     PublicKeyJwk jwk2 = JsonConvert.toInstance(json, PublicKeyJwk.class);
+
     // JSON should be the same
-    //System.out.println(json);
     assertEquals(json, JsonConvert.toJson(jwk2));
 
     // Public keys should be the same
@@ -50,6 +52,14 @@ public class PublicKeyJwkFactoryTest {
 
     assertEquals(jwk, jwk2);
     assertEquals(jwk.hashCode(), jwk2.hashCode());
+    assertEquals(jwk, jwk.copy());
+
+    assertTrue(jwk.equals(jwk));
+    assertFalse(jwk.equals(null));
+    assertFalse(jwk.equals(""));
+
+    jwk2.setUse("foobar");
+    assertFalse(jwk.equals(jwk2));
   }
 
 }

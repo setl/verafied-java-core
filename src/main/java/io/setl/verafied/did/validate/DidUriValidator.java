@@ -82,19 +82,19 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
   public static boolean isValid(String scheme, String part, ConstraintValidatorContext context, boolean isUrl) {
     // Scheme must be specified, and must be "did" as lower case.
     if (!Objects.equals("did", scheme)) {
-      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.badScheme}");
+      addViolation(context, "{io.setl.verafied.did.validate.DidUri.badScheme}");
       return false;
     }
 
     int separator = part.indexOf(':');
     if (separator == -1 || separator == part.length() - 1) {
-      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.missingMethod}");
+      addViolation(context, "{io.setl.verafied.did.validate.DidUri.missingMethod}");
       return false;
     }
 
     String method = part.substring(0, separator);
     if (!DID_METHOD.matcher(method).matches()) {
-      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.methodLowerCase}");
+      addViolation(context, "{io.setl.verafied.did.validate.DidUri.methodLowerCase}");
       return false;
     }
 
@@ -114,7 +114,7 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
     }
 
     if (!DID_ID.matcher(part).matches()) {
-      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.invalidId}");
+      addViolation(context, "{io.setl.verafied.did.validate.DidUri.invalidId}");
       return false;
     }
 
@@ -142,7 +142,7 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
     }
 
     if (value.getFragment() != null) {
-      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.fragmentPresent}");
+      addViolation(context, "{io.setl.verafied.did.validate.DidUri.fragmentPresent}");
       return false;
     }
 

@@ -20,6 +20,8 @@
 
 package io.setl.verafied.data.jwk;
 
+import static io.setl.verafied.CredentialConstants.logSafe;
+
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -71,15 +73,31 @@ public class PublicKeyJwkEc extends PublicKeyJwk {
     return Base64.getUrlEncoder().encodeToString(bytes);
   }
 
+
   private String curve;
 
   private String x;
 
   private String y;
 
+
   public PublicKeyJwkEc() {
     // do nothing
   }
+
+
+  /**
+   * Copy constructor.
+   *
+   * @param toCopy instance to copy
+   */
+  public PublicKeyJwkEc(PublicKeyJwkEc toCopy) {
+    super(toCopy);
+    curve = toCopy.curve;
+    x = toCopy.x;
+    y = toCopy.y;
+  }
+
 
   /**
    * New instance.
@@ -99,6 +117,11 @@ public class PublicKeyJwkEc extends PublicKeyJwk {
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new InternalError("Elliptic Curve support is required");
     }
+  }
+
+
+  public PublicKeyJwkEc copy() {
+    return new PublicKeyJwkEc(this);
   }
 
 
@@ -134,6 +157,9 @@ public class PublicKeyJwkEc extends PublicKeyJwk {
   @Override
   public PublicKey getPublicKey() throws InvalidKeySpecException {
     ECNamedCurveParameterSpec params = STANDARD_CURVES.get(curve);
+    if (params == null) {
+      throw new InvalidKeySpecException("Unknown curve: " + logSafe(curve));
+    }
     ECPoint point = params.getCurve().createPoint(
         new BigInteger(1, Base64.getUrlDecoder().decode(x)),
         new BigInteger(1, Base64.getUrlDecoder().decode(y))

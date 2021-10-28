@@ -59,6 +59,24 @@ public class VerificationMethod {
   }
 
 
+  /**
+   * Copy constructor.
+   *
+   * @param toCopy instance to copy
+   */
+  public VerificationMethod(VerificationMethod toCopy) {
+    controller.addAll(toCopy.controller);
+    id = toCopy.id;
+    publicKeyJwk = toCopy.getPublicKeyJwk();
+    type = toCopy.type;
+  }
+
+
+  public VerificationMethod copy() {
+    return new VerificationMethod(this);
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -94,7 +112,7 @@ public class VerificationMethod {
 
 
   public PublicKeyJwk getPublicKeyJwk() {
-    return publicKeyJwk;
+    return publicKeyJwk != null ? publicKeyJwk.copy() : null;
   }
 
 
@@ -139,11 +157,11 @@ public class VerificationMethod {
   /**
    * Set the public key. Note: if the ID is not set, then the ID is set to be the same as the JWK.
    *
-   * @param publicKeyJwk the public key
+   * @param publicKey the public key
    */
-  public void setPublicKeyJwk(PublicKeyJwk publicKeyJwk) {
-    this.type = JWS_TYPE;
-    this.publicKeyJwk = publicKeyJwk;
+  public void setPublicKeyJwk(PublicKeyJwk publicKey) {
+    type = JWS_TYPE;
+    publicKeyJwk = publicKey.copy();
     if (id == null) {
       id = publicKeyJwk.getKeyId();
     }

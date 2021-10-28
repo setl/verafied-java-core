@@ -52,6 +52,8 @@ import io.setl.verafied.did.validate.DidUri;
 )
 public class Credential implements Provable {
 
+  private static final Set<String> MINIMAL_TYPE = Set.of(CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+
   /** The applicable contexts. */
   private JsonValue context = null;
 
@@ -78,10 +80,11 @@ public class Credential implements Provable {
   private Proof proof;
 
   /** The types present in the credentials. */
-  private Set<String> type = Set.of(CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+  private Set<String> type = MINIMAL_TYPE;
 
 
   public Credential() {
+    context = CredentialConstants.getStandardContext();
     issuanceDate = CredentialConstants.getClock().instant();
     expirationDate = issuanceDate.plus(Duration.ofDays(365));
   }
@@ -90,6 +93,13 @@ public class Credential implements Provable {
   @Override
   public JsonObject asJson() {
     return JsonConvert.toJson(this).asJsonObject();
+  }
+
+
+  private void checkUnsigned() {
+    if (proof != null) {
+      throw new IllegalStateException("Cannot change data when a proof is attached");
+    }
   }
 
 
@@ -165,7 +175,7 @@ public class Credential implements Provable {
       description = "The cryptographic proof associated with this."
   )
   public Proof getProof() {
-    return proof;
+    return proof != null ? new Proof(proof) : null;
   }
 
 
@@ -184,11 +194,13 @@ public class Credential implements Provable {
    * @param newContext the new context.
    */
   public void setContext(JsonValue newContext) {
-    this.context = newContext;
+    checkUnsigned();
+    context = newContext;
   }
 
 
   public void setCredentialStatus(CredentialStatus credentialStatus) {
+    checkUnsigned();
     this.credentialStatus = credentialStatus;
   }
 
@@ -199,16 +211,18 @@ public class Credential implements Provable {
    * @param credentialSubject the information
    */
   public void setCredentialSubject(JsonObject credentialSubject) {
+    checkUnsigned();
     this.credentialSubject = credentialSubject;
   }
 
 
   /**
-   * Set the credentials expiration date.
+   * Set this credential's expiration date.
    *
    * @param expirationDate the expiration date
    */
   public void setExpirationDate(Instant expirationDate) {
+    checkUnsigned();
     this.expirationDate = expirationDate;
   }
 
@@ -219,22 +233,25 @@ public class Credential implements Provable {
    * @param id the identifying URI (optional)
    */
   public void setId(URI id) {
+    checkUnsigned();
     this.id = id;
   }
 
 
   public void setIssuanceDate(Instant issuanceDate) {
+    checkUnsigned();
     this.issuanceDate = issuanceDate;
   }
 
 
   public void setIssuer(URI issuer) {
+    checkUnsigned();
     this.issuer = issuer;
   }
 
 
   public void setProof(Proof proof) {
-    this.proof = proof;
+    this.proof = proof != null ? new Proof(proof) : null;
   }
 
 
@@ -244,7 +261,15 @@ public class Credential implements Provable {
    * @param newType the new types
    */
   public void setType(Set<String> newType) {
-    type = newType;
+    checkUnsigned();
+    if (newType == null || newType.isEmpty()) {
+      type = MINIMAL_TYPE;
+      return;
+    }
+    if (!newType.contains(CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE)) {
+      throw new IllegalArgumentException("Type set must contain: " + CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+    }
+    type = Set.copyOf(newType);
   }
 
 

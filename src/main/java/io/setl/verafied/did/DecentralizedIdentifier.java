@@ -271,9 +271,16 @@ public class DecentralizedIdentifier {
   }
 
 
+  /**
+   * Get a copy of the verification methods.
+   *
+   * @return a copy of the verification methods
+   */
   @JsonProperty("verificationMethod")
   public List<@Valid VerificationMethod> getVerificationMethod() {
-    return Collections.unmodifiableList(verificationMethod);
+    ArrayList<VerificationMethod> list = new ArrayList<>(verificationMethod.size());
+    verificationMethod.forEach(m -> list.add(m.copy()));
+    return list;
   }
 
 
