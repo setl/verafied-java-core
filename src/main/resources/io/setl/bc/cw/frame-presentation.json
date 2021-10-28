@@ -10,17 +10,19 @@
   "issuer": {},
   "proof": {},
   "type": {},
-  "verifiableCredential": [{
-    "@type": "VerifiableCredential",
-    "@explicit": true,
-    "@omitDefault": true,
-    "credentialStatus": {},
-    "credentialSubject": {},
-    "expirationDate": {},
-    "id": {},
-    "issuanceDate": {},
-    "issuer": {},
-    "proof": {},
-    "type": {}
-  }]
+  "verifiableCredential": [
+    {
+      "@type": "VerifiableCredential",
+      "@explicit": true,
+      "@omitDefault": true,
+      "credentialStatus": {},
+      "credentialSubject": {},
+      "expirationDate": {},
+      "id": {},
+      "issuanceDate": {},
+      "issuer": {},
+      "proof": {},
+      "type": {}
+    }
+  ]
 }

@@ -59,7 +59,6 @@ public class JsonSalt {
     return new String(output);
   }
 
-
   static {
     int i = 0;
     for (char ch = ' '; ch <= '~'; ch++) {
@@ -68,6 +67,11 @@ public class JsonSalt {
         i++;
       }
     }
+  }
+
+
+  private JsonSalt() {
+    // hidden as this is a utility class
   }
 
 }

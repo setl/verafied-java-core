@@ -23,16 +23,20 @@ package io.setl.verafied.data.presentation;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.setl.verafied.CredentialConstants;
-import io.setl.verafied.proof.ProvableApi;
 import io.setl.verafied.did.DidStoreException;
+import io.setl.verafied.proof.ProvableApi;
 import io.setl.verafied.proof.VerifyContext;
 import io.setl.verafied.proof.VerifyOutput;
 import io.setl.verafied.proof.VerifyType;
 
 /**
+ * Utility methods related to signing and verifying a verifiable presentation.
+ *
  * @author Simon Greatrix on 11/11/2020.
  */
 public class PresentationApi {
+
+  private static final String PRESENTATION = "Presentation";
 
 
   /**
@@ -61,7 +65,7 @@ public class PresentationApi {
    * @return result of the verification
    */
   private static boolean verifyProof(Presentation presentation, VerifyContext verifyContext, AtomicReference<String> holder) throws DidStoreException {
-    return ProvableApi.verifyProof(presentation.getProof(), presentation, "Presentation", presentation.getId(), verifyContext, holder);
+    return ProvableApi.verifyProof(presentation.getProof(), presentation, PRESENTATION, presentation.getId(), verifyContext, holder);
 
   }
 
@@ -73,8 +77,13 @@ public class PresentationApi {
    */
   private static boolean verifyType(Presentation presentation, AtomicReference<String> holder) {
     return
-        ProvableApi.verifyContext(presentation.getContext(), "Presentation", presentation.getId(), holder)
-            && ProvableApi.verifyType(presentation.getType(), "Presentation", presentation.getId(), holder, CredentialConstants.VERIFIABLE_PRESENTATION_TYPE);
+        ProvableApi.verifyContext(presentation.getContext(), PRESENTATION, presentation.getId(), holder)
+            && ProvableApi.verifyType(presentation.getType(), PRESENTATION, presentation.getId(), holder, CredentialConstants.VERIFIABLE_PRESENTATION_TYPE);
+  }
+
+
+  private PresentationApi() {
+    // hidden as this is a utility class
   }
 
 }

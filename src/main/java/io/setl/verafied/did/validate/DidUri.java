@@ -35,6 +35,8 @@ import javax.validation.Payload;
 
 
 /**
+ * Annotation to mark that a field must be a valid DID URI.
+ *
  * @author Simon Greatrix on 07/09/2020.
  */
 @Documented
@@ -46,8 +48,10 @@ public @interface DidUri {
   /** Validation groups. */
   Class<?>[] groups() default {};
 
+
   /** Default message. */
   String message() default "{io.setl.chain.cw.data.validate.DidUri.message}";
+
 
   /** Validation payload. */
   Class<? extends Payload>[] payload() default {};

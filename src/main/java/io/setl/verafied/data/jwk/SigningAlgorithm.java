@@ -115,6 +115,7 @@ public enum SigningAlgorithm {
     throw new IllegalArgumentException("Unknown signature algorithm: " + logSafe(jwkName));
   }
 
+
   static {
     CredentialConstants.initialise();
   }

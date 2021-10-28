@@ -21,6 +21,8 @@
 package io.setl.verafied.did;
 
 /**
+ * Indicate a failure to retrieve a Decentralized Identity Document from storage.
+ *
  * @author Simon Greatrix on 23/10/2021.
  */
 public class DidStoreException extends Exception {

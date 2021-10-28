@@ -27,20 +27,37 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.setl.verafied.data.Proof;
-
 /**
+ * An interface that indicates the object can have a standard proof attached to it.
+ *
  * @author Simon Greatrix on 27/10/2020.
  */
 public interface Provable {
 
+  /**
+   * Convert this to an JSON representation. This JSON is what will be signed or verified.
+   *
+   * @return the JSON representation of this.
+   */
   JsonObject asJson();
 
+
+  /**
+   * Get the "proof" element of this, if it has been set.
+   *
+   * @return the proof, or null
+   */
   @JsonProperty("proof")
   @JsonInclude(Include.NON_NULL)
   @Valid
   Proof getProof();
 
+
+  /**
+   * Set the "proof" element of this which contains the signature.
+   *
+   * @param proof the proof element
+   */
   void setProof(Proof proof);
 
 }

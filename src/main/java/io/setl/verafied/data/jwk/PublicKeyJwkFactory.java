@@ -21,9 +21,11 @@
 package io.setl.verafied.data.jwk;
 
 import java.security.PublicKey;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -35,11 +37,14 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
 /**
+ * A factory for creating representations of JSON Web Keys from standard Public Keys. Additional implementations may be added if desired. The standard
+ * implementations may be replaced if necessary, for example in order to use a specific cryptographic library.
+ *
  * @author Simon Greatrix on 27/06/2020.
  */
 public class PublicKeyJwkFactory {
 
-  private static volatile Map<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> MAKERS;
+  private static ConcurrentMap<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> factories = new ConcurrentHashMap<>();
 
 
   /**
@@ -55,12 +60,14 @@ public class PublicKeyJwkFactory {
     AlgorithmIdentifier algorithmIdentifier = pki.getAlgorithm();
     ASN1ObjectIdentifier algorithmOID = algorithmIdentifier.getAlgorithm();
 
-    BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk> maker = MAKERS.get(algorithmOID);
+    ConcurrentMap<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> myFactories = factories;
+
+    BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk> maker = myFactories.get(algorithmOID);
     if (maker == null) {
       // Try to match via a parameter. This is required for Elliptic Curves.
       ASN1Encodable parameter = algorithmIdentifier.getParameters();
       if (parameter instanceof ASN1ObjectIdentifier) {
-        maker = MAKERS.get(parameter);
+        maker = myFactories.get(parameter);
       }
     }
 
@@ -73,6 +80,26 @@ public class PublicKeyJwkFactory {
 
 
   /**
+   * Get a copy of all the factory mappings.
+   *
+   * @return the factories
+   */
+  public static Map<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> getFactories() {
+    return Map.copyOf(factories);
+  }
+
+
+  /**
+   * Set the factory mappings. The provided map replaces the one used by this class, so further modifications of it will be reflected here.
+   *
+   * @param newFactories the factory mappings
+   */
+  public static void setFactories(ConcurrentMap<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> newFactories) {
+    factories = Objects.requireNonNull(newFactories);
+  }
+
+
+  /**
    * Register a new factory for converting a public key to a <code>PublicKeyJwk</code> instance based upon its ASN1 Object Identifier. Note that if there is no
    * match on the algorithm itself, and the algorithm specifies an OID as its single parameter, then a second match is attempted on that parameter value. This
    * is how elliptic curves are matched.
@@ -80,10 +107,8 @@ public class PublicKeyJwkFactory {
    * @param oid   the OID to match
    * @param maker the function that converts either the public key, or the subject public key info, to a suitable instance.
    */
-  public static synchronized void setFactory(ASN1ObjectIdentifier oid, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk> maker) {
-    HashMap<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> map = new HashMap<>(MAKERS);
-    map.put(oid, maker);
-    MAKERS = Collections.unmodifiableMap(map);
+  public static void setFactory(ASN1ObjectIdentifier oid, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk> maker) {
+    factories.put(oid, maker);
   }
 
 
@@ -97,7 +122,12 @@ public class PublicKeyJwkFactory {
     map.put(SECObjectIdentifiers.secp384r1, (pk, spki) -> new PublicKeyJwkEc("P-384", pk));
     map.put(SECObjectIdentifiers.secp521r1, (pk, spki) -> new PublicKeyJwkEc("P-521", pk));
 
-    MAKERS = Collections.unmodifiableMap(map);
+    factories.putAll(map);
+  }
+
+
+  private PublicKeyJwkFactory() {
+    // Hidden as this is a utility class
   }
 
 }

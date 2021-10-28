@@ -31,6 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.setl.json.jackson.Convert;
 
 /**
+ * Utility methods to between Java objects and their JSON representations.
+ *
  * @author Simon Greatrix on 02/07/2020.
  */
 public class JsonConvert {
@@ -66,12 +68,19 @@ public class JsonConvert {
     return (JsonStructure) Convert.toJson(OBJECT_MAPPER.<JsonNode>valueToTree(object));
   }
 
-
   static {
     OBJECT_MAPPER = new ObjectMapper();
     //Beware the DefaultScalaModule, it's evilness causes changes in mapper deserialisation, and consequential test failure
     List<String> allowedModules = List.of("JsonModule", "Jdk8Module", "JavaTimeModule", "ParameterNamesModule", "AfterburnerModule");
-    OBJECT_MAPPER.registerModules(ObjectMapper.findModules().stream().filter(m -> allowedModules.contains(m.getClass().getSimpleName())).collect(Collectors.toList()));
+    OBJECT_MAPPER.registerModules(ObjectMapper.findModules()
+        .stream()
+        .filter(m -> allowedModules.contains(m.getClass().getSimpleName()))
+        .collect(Collectors.toList()));
+  }
+
+
+  private JsonConvert() {
+    // Hidden as this is a utility class
   }
 
 }

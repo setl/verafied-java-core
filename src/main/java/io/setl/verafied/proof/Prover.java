@@ -29,6 +29,8 @@ import io.setl.verafied.data.TypedKeyPair;
 import io.setl.verafied.did.DidStoreException;
 
 /**
+ * Instance for something that can attach proofs to documents and verify such proofs.
+ *
  * @author Simon Greatrix on 03/10/2020.
  */
 public interface Prover {

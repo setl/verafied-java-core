@@ -1,9 +1,23 @@
+
 plugins {
-  id 'java'
+  id "java"
+  id "com.github.spotbugs" version "2.0.0"
+  id 'com.palantir.git-version' version '0.12.3'
 }
 
+apply plugin: 'checkstyle'
+apply plugin: 'maven-publish'
+
 group 'io.setl'
-version '1.0-SNAPSHOT'
+if (
+  (versionDetails().branchName == null || (versionDetails().branchName ==~ /^(master)|(release.*)|(patch.*)$/))
+  && versionDetails().isCleanTag
+  && gitVersion() ==~ /^\d+(\.\d+)+(-.+)?$/
+) {
+  project.version = gitVersion()
+} else {
+  project.version = '100-SNAPSHOT'
+}
 
 repositories {
   mavenCentral()
@@ -22,4 +36,16 @@ dependencies {
 
   testImplementation group: 'junit', name: 'junit', version: '4.12'
   testRuntimeOnly group: 'junit', name: 'junit', version: '4.12'
+}
+
+checkstyle {
+  toolVersion = "8.41.1"
+  configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+}
+
+spotbugs {
+  toolVersion = '3.1.12'
+  sourceSets = [sourceSets.main]
+  ignoreFailures = true
+  reportsDir = file("$project.buildDir/findbugsReports")
 }

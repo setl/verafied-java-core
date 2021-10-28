@@ -41,6 +41,8 @@ import io.setl.verafied.data.Proof;
 import io.setl.verafied.did.DidStoreException;
 
 /**
+ * Utility methods for verifying a document's proof.
+ *
  * @author Simon Greatrix on 11/11/2020.
  */
 public class ProvableApi {
@@ -216,6 +218,11 @@ public class ProvableApi {
     }
 
     return true;
+  }
+
+
+  private ProvableApi() {
+    // Hidden as this is a utility class
   }
 
 }

@@ -43,7 +43,7 @@ import io.setl.verafied.did.validate.DidUri;
 public class VerificationMethod {
 
   /** The only supported type is JwsVerificationKey2020. */
-  private static final String TYPE = "JwsVerificationKey2020";
+  private static final String JWS_TYPE = "JwsVerificationKey2020";
 
   private final List<URI> controller = new ArrayList<>();
 
@@ -114,7 +114,7 @@ public class VerificationMethod {
   @JsonIgnore
   @AssertTrue
   public boolean isTypeJwsVerificationKey2020() {
-    return type.equals(TYPE);
+    return type.equals(JWS_TYPE);
   }
 
 
@@ -142,7 +142,7 @@ public class VerificationMethod {
    * @param publicKeyJwk the public key
    */
   public void setPublicKeyJwk(PublicKeyJwk publicKeyJwk) {
-    this.type = TYPE;
+    this.type = JWS_TYPE;
     this.publicKeyJwk = publicKeyJwk;
     if (id == null) {
       id = publicKeyJwk.getKeyId();

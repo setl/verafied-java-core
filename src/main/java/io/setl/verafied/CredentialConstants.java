@@ -28,21 +28,20 @@ import java.security.Security;
 import java.time.Clock;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import javax.json.spi.JsonProvider;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
+ * Constants and singletons used in the handling of verifiable credentials.
+ *
  * @author Simon Greatrix on 14/10/2020.
  */
 public class CredentialConstants {
 
   /** The required context for a verifiable credential. */
   public static final String CREDENTIAL_CONTEXT = "https://www.w3.org/2018/credentials/v1";
-
-  /** Name of the SETL revocation mechanism. */
-  public static final String HTTP_STATUS_CHECK = "HttpStatusCheck";
 
   /** JSON API provider. */
   public static final JsonProvider JSON_PROVIDER = JsonProvider.provider();
@@ -58,7 +57,7 @@ public class CredentialConstants {
   /** Clock for calculating current time. This is settable for testing. */
   private static Clock clock = Clock.systemUTC();
 
-  private static Function<String, String> logSafe = Function.identity();
+  private static UnaryOperator<String> logSafe = UnaryOperator.identity();
 
 
   /**
@@ -78,11 +77,16 @@ public class CredentialConstants {
    *
    * @see #logSafe(String)
    */
-  public static Function<String, String> getLogSafe() {
+  public static UnaryOperator<String> getLogSafe() {
     return logSafe;
   }
 
 
+  /**
+   * Get a secure random number generator. If possible the default one will be a "strong" generator".
+   *
+   * @return a secure randon number generator
+   */
   public static SecureRandom getSecureRandom() {
     SecureRandom sr = SECURE_RANDOM.get();
     if (sr == null) {
@@ -133,7 +137,7 @@ public class CredentialConstants {
    *
    * @param logSafe the function
    */
-  public static void setLogSafe(Function<String, String> logSafe) {
+  public static void setLogSafe(UnaryOperator<String> logSafe) {
     CredentialConstants.logSafe = Objects.requireNonNull(logSafe);
   }
 
@@ -155,4 +159,10 @@ public class CredentialConstants {
       Security.addProvider(new BouncyCastleProvider());
     }
   }
+
+
+  private CredentialConstants() {
+    // Hidden as this is a utility class
+  }
+
 }

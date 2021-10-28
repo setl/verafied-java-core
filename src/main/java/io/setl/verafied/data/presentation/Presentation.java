@@ -145,7 +145,8 @@ public class Presentation implements Provable {
   @AssertTrue(message = "io.setl.chain.cw.data.Presentation.isValidType.message")
   @JsonIgnore
   public boolean isValidType() {
-    return type != null && (type.contains(CredentialConstants.VERIFIABLE_PRESENTATION_TYPE) || type.contains("https://www.w3.org/2018/credentials#VerifiablePresentation"));
+    return type != null && (type.contains(CredentialConstants.VERIFIABLE_PRESENTATION_TYPE) || type.contains(
+        "https://www.w3.org/2018/credentials#VerifiablePresentation"));
   }
 
 

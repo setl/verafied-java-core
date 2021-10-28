@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
+ * Enumeration of the types of credentials which a verification key can sign.
+ *
  * @author Simon Greatrix on 02/07/2020.
  */
 public enum KeyUsage {

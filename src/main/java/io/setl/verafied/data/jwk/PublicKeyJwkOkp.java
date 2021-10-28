@@ -29,6 +29,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +40,8 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
 /**
+ * Representation of a JSON Web key that uses a "Octet Key Pair" representation.
+ *
  * @author Simon Greatrix on 27/06/2020.
  */
 public class PublicKeyJwkOkp extends PublicKeyJwk {
@@ -62,6 +65,22 @@ public class PublicKeyJwkOkp extends PublicKeyJwk {
 
   public PublicKeyJwkOkp() {
     // do nothing
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof PublicKeyJwkOkp)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    PublicKeyJwkOkp that = (PublicKeyJwkOkp) o;
+    return curve.equals(that.curve) && x.equals(that.x);
   }
 
 
@@ -109,6 +128,12 @@ public class PublicKeyJwkOkp extends PublicKeyJwk {
   @JsonProperty("x")
   public String getX() {
     return x;
+  }
+
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), curve, x);
   }
 
 

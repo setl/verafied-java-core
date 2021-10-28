@@ -21,7 +21,6 @@
 package io.setl.verafied.data;
 
 import java.security.PrivateKey;
-import java.security.PublicKey;
 
 import io.setl.verafied.data.jwk.SigningAlgorithm;
 
@@ -36,12 +35,15 @@ public class TypedKeyPair {
 
   private final PrivateKey privateKey;
 
-  private final PublicKey publicKey;
 
-
-  public TypedKeyPair(SigningAlgorithm algorithm, PublicKey publicKey, PrivateKey privateKey) {
+  /**
+   * New instance.
+   *
+   * @param algorithm  the used to sign with the private key.
+   * @param privateKey the private key
+   */
+  public TypedKeyPair(SigningAlgorithm algorithm, PrivateKey privateKey) {
     this.algorithm = algorithm;
-    this.publicKey = publicKey;
     this.privateKey = privateKey;
   }
 
@@ -53,11 +55,6 @@ public class TypedKeyPair {
 
   public PrivateKey getPrivateKey() {
     return privateKey;
-  }
-
-
-  public PublicKey getPublicKey() {
-    return publicKey;
   }
 
 }

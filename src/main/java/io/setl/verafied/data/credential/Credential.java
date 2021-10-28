@@ -43,6 +43,8 @@ import io.setl.verafied.data.Provable;
 import io.setl.verafied.did.validate.DidUri;
 
 /**
+ * Representation of a verifiable credential.
+ *
  * @author Simon Greatrix on 20/07/2020.
  */
 @Schema(

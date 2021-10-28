@@ -17,13 +17,13 @@
  *
  * </notice>
  */
+
 package io.setl.verafied.data.credential;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,15 +31,23 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
 
 /**
+ * A Jackson deserializer for credential status definitions. No such mechanisms are defined in this library implementers must register their implementation here
+ * so that the credential can be read successfully.
+ *
  * @author Simon Greatrix on 27/10/2021.
  */
 public class StatusDeserializer extends StdDeserializer<CredentialStatus> {
 
-  private static ConcurrentMap<String, Class<? extends CredentialStatus>> TYPE_NAME_MAPPING = new ConcurrentHashMap<>();
+  private static ConcurrentMap<String, Class<? extends CredentialStatus>> typeNameMapping = new ConcurrentHashMap<>();
 
 
   public static void addTypeMapping(String typeName, Class<? extends CredentialStatus> typeClass) {
-    TYPE_NAME_MAPPING.put(typeName, typeClass);
+    typeNameMapping.put(typeName, typeClass);
+  }
+
+
+  public static void setTypeMappings(ConcurrentMap<String, Class<? extends CredentialStatus>> mappings) {
+    typeNameMapping = mappings;
   }
 
 
@@ -49,12 +57,12 @@ public class StatusDeserializer extends StdDeserializer<CredentialStatus> {
 
 
   @Override
-  public CredentialStatus deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+  public CredentialStatus deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
     JsonNode treeNode = p.readValueAsTree();
 
     if (treeNode.has("type")) {
       String typeName = treeNode.get("type").asText();
-      Class<? extends CredentialStatus> typeClass = TYPE_NAME_MAPPING.get(typeName);
+      Class<? extends CredentialStatus> typeClass = typeNameMapping.get(typeName);
       if (typeClass == null) {
         throw InvalidTypeIdException.from(p, "BaseTransaction must specify a valid 'txType' property", ctxt.constructType(CredentialStatus.class), typeName);
       }

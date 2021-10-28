@@ -27,12 +27,15 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * Representation of a JSON Web Key that uses a Rivest-Shamir-Adelman key.
+ *
  * @author Simon Greatrix on 27/06/2020.
  */
 public class PublicKeyJwkRsa extends PublicKeyJwk {
@@ -78,6 +81,22 @@ public class PublicKeyJwkRsa extends PublicKeyJwk {
   }
 
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof PublicKeyJwkRsa)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    PublicKeyJwkRsa that = (PublicKeyJwkRsa) o;
+    return exponent.equals(that.exponent) && modulus.equals(that.modulus);
+  }
+
+
   @JsonProperty("e")
   public String getExponent() {
     return exponent;
@@ -109,6 +128,12 @@ public class PublicKeyJwkRsa extends PublicKeyJwk {
     } catch (NoSuchAlgorithmException e) {
       throw new InternalError("RSA support is required");
     }
+  }
+
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), exponent, modulus);
   }
 
 

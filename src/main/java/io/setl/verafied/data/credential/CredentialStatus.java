@@ -46,8 +46,8 @@ public class CredentialStatus {
   /**
    * New instance.
    *
-   * @param id           credential ID
-   * @param type         credential status check type
+   * @param id   credential ID
+   * @param type credential status check type
    */
   public CredentialStatus(
       @JsonProperty(value = "id", required = true) URI id,
@@ -62,7 +62,6 @@ public class CredentialStatus {
   public URI getId() {
     return id;
   }
-
 
 
   @NotEmpty

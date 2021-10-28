@@ -52,14 +52,29 @@ public class SharedContext {
   private String keyId;
 
 
+  /**
+   * Get the "bytes-to-sign" value.
+   *
+   * @return the bytes
+   *
+   * @throws IllegalStateException if "bytesToSign" has not yet been set
+   * @see #setBytesToSign(byte[]) 
+   */
   public byte[] getBytesToSign() {
     if (bytesToSign == null) {
       throw new IllegalStateException("'bytesToSign' is not set yet.");
     }
-    return bytesToSign;
+    return bytesToSign.clone();
   }
 
-
+  /**
+   * Get the DID ID.
+   *
+   * @return the ID
+   *
+   * @throws IllegalStateException if "didId" has not yet been set 
+   * @see #setDidWithKey(DidId)
+   */
   public URI getDidId() {
     if (didId == null) {
       throw new IllegalStateException("'didId' is not set yet.");
@@ -67,7 +82,14 @@ public class SharedContext {
     return didId;
   }
 
-
+  /**
+   * Get the DID ID and selected verification method.
+   *
+   * @return the ID
+   *
+   * @throws IllegalStateException if "didWithKey" has not yet been set 
+   * @see #setDidWithKey(DidId)
+   */
   public DidId getDidWithKey() {
     if (didWithKey == null) {
       throw new IllegalStateException("'didWithKey' is not set yet.");
@@ -76,9 +98,17 @@ public class SharedContext {
   }
 
 
+  /**
+   * Get the key ID value which specifies the DID's verification method.
+   *
+   * @return the ID
+   *
+   * @throws IllegalStateException if "keyId" has not yet been set 
+   * @see #setDidWithKey(DidId) 
+   */
   public String getKeyId() {
-    if (didId == null) {
-      throw new IllegalStateException("'didId' is not set yet, so the verification method is also unavailable.");
+    if (keyId == null) {
+      throw new IllegalStateException("'keyId' is not set yet, so the verification method is also unavailable.");
     }
     return keyId;
   }
@@ -93,7 +123,7 @@ public class SharedContext {
     if (bytesToSign == null) {
       throw new IllegalArgumentException("'bytesToSign' must not be null");
     }
-    this.bytesToSign = bytesToSign;
+    this.bytesToSign = bytesToSign.clone();
     if (logger.isDebugEnabled()) {
       logger.debug("Bytes to sign={}", Base64.getUrlEncoder().encodeToString(bytesToSign));
     }
@@ -101,7 +131,7 @@ public class SharedContext {
 
 
   /**
-   * Set the DID with key fragment URI. This also splits the DID with fragment into its constituent parts.
+   * Set the DID with key fragment URI. This also splits the DID with fragment into its constituent parts so sets "didId" and "keyId".
    *
    * @param id the DID with key fragment
    */

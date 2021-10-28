@@ -23,21 +23,29 @@ package io.setl.verafied.proof;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.Signature;
+import java.util.Objects;
 
 import io.setl.verafied.CredentialConstants;
 import io.setl.verafied.data.TypedKeyPair;
 import io.setl.verafied.data.jwk.SigningAlgorithm;
 
 /**
+ * Context for attaching a proof to a document.
+ *
  * @author Simon Greatrix on 02/10/2020.
  */
 public class ProofContext extends SharedContext {
 
   /** The proof generator. */
-  private Prover prover;
+  private final Prover prover;
 
   /** The signature. */
   private byte[] signatureValue;
+
+
+  public ProofContext(Prover prover) {
+    this.prover = Objects.requireNonNull(prover);
+  }
 
 
   public Prover getProver() {
@@ -54,12 +62,7 @@ public class ProofContext extends SharedContext {
     if (signatureValue == null) {
       throw new IllegalStateException("Signature value is not available. 'sign' method must be invoked first.");
     }
-    return signatureValue;
-  }
-
-
-  public void setProver(Prover prover) {
-    this.prover = prover;
+    return signatureValue.clone();
   }
 
 

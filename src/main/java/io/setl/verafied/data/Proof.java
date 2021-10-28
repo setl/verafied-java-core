@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;

@@ -1,27 +1,44 @@
 {
-  "$schema" : "http://json-schema.org/draft-07/schema#",
-  "title" : "CW Key Set",
-  "type" : "object",
-  "additionalProperties" : {
-    "$ref" : "#/definitions/CwKeyPair"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CW Key Set",
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/CwKeyPair"
   },
-  "definitions" : {
-    "CwKeyPair" : {
-      "type" : "object",
-      "additionalProperties" : false,
-      "properties" : {
-        "algorithm" : {
-          "type" : "string",
-          "enum" : [ "RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256K", "ES256", "ES384", "ES512", "Ed25519", "Ed448", "NONE" ]
+  "definitions": {
+    "CwKeyPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "RS256",
+            "RS384",
+            "RS512",
+            "PS256",
+            "PS384",
+            "PS512",
+            "ES256K",
+            "ES256",
+            "ES384",
+            "ES512",
+            "Ed25519",
+            "Ed448",
+            "NONE"
+          ]
         },
-        "pem" : {
-          "type" : "string"
+        "pem": {
+          "type": "string"
         },
-        "id" : {
-          "type" : "string"
+        "id": {
+          "type": "string"
         }
       },
-      "required" : [ "algorithm", "pem" ]
+      "required": [
+        "algorithm",
+        "pem"
+      ]
     }
   }
 }

@@ -38,14 +38,14 @@ public class PublicKeyJwkRsaTest {
 
 
   @Test
-  @Ignore // Ignore as it takes ages
+  @Ignore("Ignored as generating the RSA keys is very slow")
   public void test384() throws GeneralSecurityException, JsonProcessingException {
     PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.RS384);
   }
 
 
   @Test
-  @Ignore // Ignore as it takes ages
+  @Ignore("Ignored as generating the RSA keys is very slow")
   public void test512() throws GeneralSecurityException, JsonProcessingException {
     PublicKeyJwkFactoryTest.testAlgorithm(SigningAlgorithm.RS512);
   }

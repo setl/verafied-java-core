@@ -20,18 +20,22 @@
 
 package io.setl.verafied.proof;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
+ * The result of a cryptographic verification.
+ *
  * @author Simon Greatrix on 10/07/2020.
  */
 @Schema(
     description = "The result of a cryptographic verification."
 )
-public class VerifyOutput {
+public class VerifyOutput implements Serializable {
 
   public static final VerifyOutput OK_CREDENTIAL = new VerifyOutput(true, null, VerifyType.CREDENTIAL);
 

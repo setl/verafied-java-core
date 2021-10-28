@@ -169,11 +169,6 @@ public class DecentralizedIdentifierTest {
 
 
   @Test
-  public void updated() {
-  }
-
-
-  @Test
   public void verificationMethod() {
     VerificationMethod vm1 = new VerificationMethod();
     vm1.setId(URI.create("did:setl:user#vm1"));

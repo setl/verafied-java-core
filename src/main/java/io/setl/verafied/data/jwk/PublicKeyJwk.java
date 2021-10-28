@@ -41,6 +41,8 @@ import io.setl.verafied.did.validate.DidUrl;
 import io.setl.verafied.did.validate.DidUrl.Has;
 
 /**
+ * Representation of a JSON Web Key.
+ *
  * @author Simon Greatrix on 27/06/2020.
  */
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "kty")
@@ -52,13 +54,14 @@ import io.setl.verafied.did.validate.DidUrl.Has;
 public abstract class PublicKeyJwk {
 
   static {
+    // Ensure BouncyCastle is loaded
     CredentialConstants.initialise();
   }
 
   /** The key ID. */
   private URI keyId;
 
-  /** The expected key use. Typically "sig" for signing. */
+  /** The expected key use. Typically, "sig" for signing. */
   private String use = "sig";
 
 

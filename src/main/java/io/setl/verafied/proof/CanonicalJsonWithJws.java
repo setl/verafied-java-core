@@ -48,6 +48,8 @@ import io.setl.verafied.data.jwk.SigningAlgorithm;
 import io.setl.verafied.did.DidStoreException;
 
 /**
+ * Implementation of the "Canonical JSON with JWS" signature method.
+ *
  * @author Simon Greatrix on 02/10/2020.
  */
 public class CanonicalJsonWithJws implements Prover {

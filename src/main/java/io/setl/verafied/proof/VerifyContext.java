@@ -45,17 +45,17 @@ import io.setl.verafied.did.VerificationMethod;
  */
 public class VerifyContext extends SharedContext {
 
+  private final DidStore didStore;
+
   private SigningAlgorithm algorithm;
 
   private byte[] allegedSignature;
-
-  private final DidStore didStore;
 
   private VerificationMethod verificationMethod;
 
 
   public VerifyContext(DidStore didStore) {
-    this.didStore = didStore;
+    this.didStore = Objects.requireNonNull(didStore);
   }
 
 
@@ -98,32 +98,58 @@ public class VerifyContext extends SharedContext {
   }
 
 
+  /**
+   * Get the signing algorithm used by the proof.
+   *
+   * @return the signing algorithm
+   *
+   * @throws IllegalStateException if the signing algorithm has not been set yet
+   * @see #setAlgorithm(SigningAlgorithm)
+   */
   public SigningAlgorithm getAlgorithm() {
-    if( algorithm==null ) {
+    if (algorithm == null) {
       throw new IllegalStateException("Signing algorithm has not been set.");
     }
     return algorithm;
   }
 
 
+  /**
+   * Get the bytes of the alleged signature that is attached to the document.
+   *
+   * @return the bytes of the alleged signature
+   *
+   * @throws IllegalStateException if the alleged signature has not been set yet
+   * @see #setAllegedSignature(byte[])
+   */
   public byte[] getAllegedSignature() {
-    if(allegedSignature==null ) {
+    if (allegedSignature == null) {
       throw new IllegalStateException("Alleged signature has not been set yet.");
     }
-    return allegedSignature;
+    return allegedSignature.clone();
   }
 
 
+  /**
+   * Get the DID Store from which Decentralized Identity Documents can be retrieved.
+   *
+   * @return DID store
+   */
   public DidStore getDidStore() {
-    if(didStore==null) {
-      throw new IllegalStateException("DID store has not been set yet.");
-    }
     return didStore;
   }
 
 
+  /**
+   * Get the verification method used to check the signature.
+   *
+   * @return the verification method
+   *
+   * @throws IllegalStateException if the verification method has not been set
+   * @see #findVerificationMethod(Proof)
+   */
   public VerificationMethod getVerificationMethod() {
-    if( verificationMethod==null ) {
+    if (verificationMethod == null) {
       throw new IllegalStateException("Verification method has not been set yet.");
     }
     return verificationMethod;
@@ -136,7 +162,7 @@ public class VerifyContext extends SharedContext {
 
 
   public void setAllegedSignature(byte[] allegedSignature) {
-    this.allegedSignature = allegedSignature;
+    this.allegedSignature = allegedSignature.clone();
   }
 
 

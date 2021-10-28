@@ -27,7 +27,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Map;
-
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,6 +38,8 @@ import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 /**
+ * Representation of an Elliptic Curve JSON Web Key.
+ *
  * @author Simon Greatrix on 27/06/2020.
  */
 public class PublicKeyJwkEc extends PublicKeyJwk {
@@ -69,18 +71,15 @@ public class PublicKeyJwkEc extends PublicKeyJwk {
     return Base64.getUrlEncoder().encodeToString(bytes);
   }
 
-
   private String curve;
 
   private String x;
 
   private String y;
 
-
   public PublicKeyJwkEc() {
     // do nothing
   }
-
 
   /**
    * New instance.
@@ -100,6 +99,22 @@ public class PublicKeyJwkEc extends PublicKeyJwk {
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new InternalError("Elliptic Curve support is required");
     }
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof PublicKeyJwkEc)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    PublicKeyJwkEc that = (PublicKeyJwkEc) o;
+    return curve.equals(that.curve) && x.equals(that.x) && y.equals(that.y);
   }
 
 
@@ -141,6 +156,12 @@ public class PublicKeyJwkEc extends PublicKeyJwk {
   @JsonProperty("y")
   public String getY() {
     return y;
+  }
+
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), curve, x, y);
   }
 
 

@@ -21,6 +21,7 @@
 package io.setl.verafied.did;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Process DID URLs. This class assumes the DID URL is well-formed.
@@ -48,10 +49,19 @@ public class DidId {
   private final URI uri;
 
 
+  /**
+   * New instance. The parameters are <strong>not</strong> verified to ensure they contain only legal characters.
+   *
+   * @param method   the DID method (required)
+   * @param id       the DID ID (required)
+   * @param path     the path part of the DID ID (optional)
+   * @param query    the query part of the DID ID (optional)
+   * @param fragment the fragment part of the DID ID for specifying verification methods.
+   */
   public DidId(String method, String id, String path, String query, String fragment) {
     this.fragment = fragment;
-    this.id = id;
-    this.method = method;
+    this.id = Objects.requireNonNull(id);
+    this.method = Objects.requireNonNull(method);
     this.path = path;
     this.query = query;
     StringBuilder uriText = new StringBuilder("did:").append(method).append(':').append(id);
@@ -119,16 +129,6 @@ public class DidId {
   }
 
 
-  /**
-   * Get the full DID URI including path, query and fragment parts.
-   *
-   * @return the DID URI
-   */
-  public URI getUri() {
-    return uri;
-  }
-
-
   public String getId() {
     return id;
   }
@@ -159,6 +159,16 @@ public class DidId {
   }
 
 
+  /**
+   * Get the full DID URI including path, query and fragment parts.
+   *
+   * @return the DID URI
+   */
+  public URI getUri() {
+    return uri;
+  }
+
+
   @Override
   public int hashCode() {
     return uri.hashCode();
@@ -170,6 +180,11 @@ public class DidId {
   }
 
 
+  /**
+   * Get a DidId without the fragment. Typically, this is used to get the base DID ID from the verification method's ID. If this has no fragment, returns this.
+   *
+   * @return the DID ID without a fragment.
+   */
   public DidId withoutFragment() {
     if (fragment == null) {
       return this;

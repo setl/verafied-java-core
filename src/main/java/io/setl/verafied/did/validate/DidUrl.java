@@ -35,6 +35,8 @@ import javax.validation.Payload;
 
 
 /**
+ * Annotation to mark that a field must be a valid DIR URL. By default, the path, query and fragment parts are optional.
+ *
  * @author Simon Greatrix on 07/09/2020.
  */
 @Documented
@@ -43,8 +45,16 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DidUrl {
 
+  /** Enumeration to specify whether a part of the URL has to be present or not. */
   enum Has {
-    YES, NO, EITHER
+    /** The URL part must be present. */
+    YES,
+
+    /** The URL part must not be present. */
+    NO,
+
+    /** The URL part is optional. */
+    EITHER
   }
 
 
@@ -52,15 +62,15 @@ public @interface DidUrl {
   Class<?>[] groups() default {};
 
 
-  /** Specify if the URL must have a fragment specifier. */
+  /** Specify if the URL must have a fragment specifier. (Optional by default) */
   Has hasFragment() default Has.EITHER;
 
 
-  /** Specify if the URL must have a path component. */
+  /** Specify if the URL must have a path component. (Optional by default) */
   Has hasPath() default Has.EITHER;
 
 
-  /** Specify if the URL must have a query part. */
+  /** Specify if the URL must have a query part. (Optional by default) */
   Has hasQuery() default Has.EITHER;
 
 
@@ -68,7 +78,7 @@ public @interface DidUrl {
   String message() default "{io.setl.chain.cw.data.validate.DidUrl.message}";
 
 
-  /** Required prefix to the URL path, if any. */
+  /** Required prefix to the URL path, if any. (Empty by default) */
   String pathPrefix() default "";
 
 

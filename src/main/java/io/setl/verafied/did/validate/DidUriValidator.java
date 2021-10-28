@@ -27,7 +27,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Enforces the DID URI specification, which is:
+ * Enforces the DID URI specification. This is:
  *
  * <pre>
  * did                = "did:" method-name ":" method-specific-id
@@ -42,21 +42,16 @@ import javax.validation.ConstraintValidatorContext;
 public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
 
   /** A DID ID must match this. */
-  private static final Pattern DID_ID = Pattern.compile("(?:[A-Za-z0-9._-]*:)*[A-Za-z0-9._-]+");
+  private static final Pattern DID_ID = Pattern.compile("[A-Za-z0-9._:-]*[A-Za-z0-9._-]");
 
   /** A DID method must only use these characters. */
   private static final Pattern DID_METHOD = Pattern.compile("[a-z0-9]+");
 
 
-  /**
-   * Validate a URI as a DID. If the input is not valid, then there is no indication as to why from this method.
-   *
-   * @param uri the URI to validate
-   *
-   * @return true if the input is valid
-   */
-  public static boolean isValid(URI uri) {
-    return uri != null && isValid(uri.getScheme(), uri.getRawSchemeSpecificPart(), false);
+  static void addViolation(ConstraintValidatorContext context, String template) {
+    if (context != null) {
+      context.buildConstraintViolationWithTemplate(template).addConstraintViolation();
+    }
   }
 
 
@@ -70,41 +65,7 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
    * @return true if the input is valid
    */
   public static boolean isValid(String scheme, String part, boolean isUrl) {
-    // Scheme must be specified, and must be "did" as lower case.
-    if (!Objects.equals("did", scheme)) {
-      return false;
-    }
-
-    int separator = part.indexOf(':');
-    if (separator == -1 || separator == part.length() - 1) {
-      return false;
-    }
-
-    String method = part.substring(0, separator);
-    if (!DID_METHOD.matcher(method).matches()) {
-      return false;
-    }
-
-    part = part.substring(separator + 1);
-    if (isUrl) {
-      // can have a query, so remove that
-      int p = part.indexOf('?');
-      if (p != -1) {
-        part = part.substring(0, p);
-      }
-
-      // can have a path, so remove that
-      p = part.indexOf('/');
-      if (p != -1) {
-        part = part.substring(0, p);
-      }
-    }
-
-    if (!DID_ID.matcher(part).matches()) {
-      return false;
-    }
-
-    return true;
+    return isValid(scheme, part, null, isUrl);
   }
 
 
@@ -121,19 +82,19 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
   public static boolean isValid(String scheme, String part, ConstraintValidatorContext context, boolean isUrl) {
     // Scheme must be specified, and must be "did" as lower case.
     if (!Objects.equals("did", scheme)) {
-      context.buildConstraintViolationWithTemplate("{io.setl.chain.cw.data.validate.DidUri.badScheme}").addConstraintViolation();
+      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.badScheme}");
       return false;
     }
 
     int separator = part.indexOf(':');
     if (separator == -1 || separator == part.length() - 1) {
-      context.buildConstraintViolationWithTemplate("{io.setl.chain.cw.data.validate.DidUri.missingMethod}").addConstraintViolation();
+      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.missingMethod}");
       return false;
     }
 
     String method = part.substring(0, separator);
     if (!DID_METHOD.matcher(method).matches()) {
-      context.buildConstraintViolationWithTemplate("{io.setl.chain.cw.data.validate.DidUri.methodLowerCase}").addConstraintViolation();
+      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.methodLowerCase}");
       return false;
     }
 
@@ -153,11 +114,23 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
     }
 
     if (!DID_ID.matcher(part).matches()) {
-      context.buildConstraintViolationWithTemplate("{io.setl.chain.cw.data.validate.DidUri.invalidId}").addConstraintViolation();
+      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.invalidId}");
       return false;
     }
 
     return true;
+  }
+
+
+  /**
+   * Validate a URI as a DID. If the input is not valid, then there is no indication as to why from this method.
+   *
+   * @param uri the URI to validate
+   *
+   * @return true if the input is valid
+   */
+  public static boolean isValid(URI uri) {
+    return uri != null && isValid(uri.getScheme(), uri.getRawSchemeSpecificPart(), false);
   }
 
 
@@ -169,7 +142,7 @@ public class DidUriValidator implements ConstraintValidator<DidUri, URI> {
     }
 
     if (value.getFragment() != null) {
-      context.buildConstraintViolationWithTemplate("{io.setl.chain.cw.data.validate.DidUri.fragmentPresent}").addConstraintViolation();
+      addViolation(context, "{io.setl.chain.cw.data.validate.DidUri.fragmentPresent}");
       return false;
     }
 

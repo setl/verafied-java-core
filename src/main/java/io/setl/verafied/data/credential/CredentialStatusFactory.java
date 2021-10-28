@@ -17,6 +17,7 @@
  *
  * </notice>
  */
+
 package io.setl.verafied.data.credential;
 
 /**

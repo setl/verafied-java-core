@@ -31,14 +31,13 @@ import org.slf4j.LoggerFactory;
 
 import io.setl.verafied.CredentialConstants;
 import io.setl.verafied.data.TypedKeyPair;
-import io.setl.verafied.did.DidId;
 import io.setl.verafied.did.DidStoreException;
 import io.setl.verafied.proof.ProofContext;
 import io.setl.verafied.proof.ProvableApi;
 import io.setl.verafied.proof.VerifyContext;
 import io.setl.verafied.proof.VerifyOutput;
 import io.setl.verafied.proof.VerifyType;
-import io.setl.verafied.revocation.RevocationStore;
+import io.setl.verafied.revocation.RevocationChecker;
 
 /**
  * Verification of credentials.
@@ -46,6 +45,8 @@ import io.setl.verafied.revocation.RevocationStore;
  * @author Simon Greatrix on 28/10/2020.
  */
 public class CredentialApi {
+
+  private static final String CREDENTIAL = "Credential";
 
   private static final Logger logger = LoggerFactory.getLogger(CredentialApi.class);
 
@@ -86,7 +87,7 @@ public class CredentialApi {
    *   <li>It has a valid proof.</li>
    * </ol>
    */
-  public static VerifyOutput verify(Credential credential, VerifyContext context, RevocationStore revocationStore) throws DidStoreException {
+  public static VerifyOutput verify(Credential credential, VerifyContext context, RevocationChecker revocationStore) throws DidStoreException {
     AtomicReference<String> holder = new AtomicReference<>();
     boolean isOk =
         verifyType(credential, holder)
@@ -135,7 +136,7 @@ public class CredentialApi {
    * @return true if OK
    */
   private static boolean verifyProof(Credential credential, VerifyContext verifyContext, AtomicReference<String> holder) throws DidStoreException {
-    return ProvableApi.verifyProof(credential.getProof(), credential, "Credential", credential.getId(), verifyContext, holder);
+    return ProvableApi.verifyProof(credential.getProof(), credential, CREDENTIAL, credential.getId(), verifyContext, holder);
   }
 
 
@@ -146,10 +147,9 @@ public class CredentialApi {
    *
    * @return true if OK
    */
-  private static boolean verifyStatus(Credential credential, RevocationStore revocationStore, AtomicReference<String> holder) {
+  private static boolean verifyStatus(Credential credential, RevocationChecker revocationStore, AtomicReference<String> holder) {
     if (credential.getCredentialStatus() != null
-        && CredentialConstants.HTTP_STATUS_CHECK.equals(credential.getCredentialStatus().getType())
-        && revocationStore.test(credential.getIssuer(), credential.getId())
+        && revocationStore.test(credential.getCredentialStatus().getType(), credential.getIssuer(), credential.getId())
     ) {
       // has been revoked
       String message = String.format("Credential %s NOT verified as it has been revoked", logSafe(credential.getId().toString()));
@@ -169,8 +169,13 @@ public class CredentialApi {
    */
   private static boolean verifyType(Credential credential, AtomicReference<String> holder) {
     return
-        ProvableApi.verifyContext(credential.getContext(), "Credential", credential.getId(), holder)
-            && ProvableApi.verifyType(credential.getType(), "Credential", credential.getId(), holder, CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+        ProvableApi.verifyContext(credential.getContext(), CREDENTIAL, credential.getId(), holder)
+            && ProvableApi.verifyType(credential.getType(), CREDENTIAL, credential.getId(), holder, CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+  }
+
+
+  private CredentialApi() {
+    // Hidden as this is a utility class.
   }
 
 }

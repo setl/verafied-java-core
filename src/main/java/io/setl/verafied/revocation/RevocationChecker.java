@@ -18,35 +18,27 @@
  * </notice>
  */
 
-package io.setl.verafied.data.jwk;
+package io.setl.verafied.revocation;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.net.URI;
 
 /**
- * The possible types of a JSON Web Key.
+ * An object that can tell if a credential has been revoked.
  *
- * @author Simon Greatrix on 27/06/2020.
+ * @author Simon Greatrix on 28/07/2020.
  */
-public enum KeyType {
-  /** Octet Key Pair - used for Ed25519. See RFC 8037 */
-  OKP,
+public interface RevocationChecker {
 
-  /** Elliptic Curve. See RFC 7517. */
-  EC,
+  /**
+   * Test if a credential has been revoked. If the credential status type does not match a type handled by this store, then the implementer may choose what to
+   * return.
+   *
+   * @param type   the credential status type.
+   * @param issuer the token for the issuer of the credential that may have been revoked
+   * @param id     the token for the ID of the credential that may have been revoked.
+   *
+   * @return true if the credential is revoked.
+   */
+  boolean test(String type, URI issuer, URI id);
 
-  /** Rivest-Shamir-Adelman key. See RFC 7517. */
-  RSA;
-
-
-  @JsonCreator
-  public static KeyType fromId(String id) {
-    return KeyType.valueOf(id.toUpperCase());
-  }
-
-
-  @JsonValue
-  public String id() {
-    return name().toLowerCase();
-  }
 }
