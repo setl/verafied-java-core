@@ -23,6 +23,7 @@ package io.setl.verafied.proof;
 import java.security.GeneralSecurityException;
 import javax.json.JsonObject;
 
+import io.setl.verafied.UnacceptableDocumentException;
 import io.setl.verafied.data.Proof;
 import io.setl.verafied.data.Provable;
 import io.setl.verafied.data.TypedKeyPair;
@@ -35,10 +36,10 @@ import io.setl.verafied.did.DidStoreException;
  */
 public interface Prover {
 
-  void attachProof(ProofContext context, Provable input, TypedKeyPair keyPair) throws GeneralSecurityException;
+  void attachProof(ProofContext context, Provable input, TypedKeyPair keyPair) throws GeneralSecurityException, UnacceptableDocumentException;
 
 
-  VerifyOutput verifyProof(VerifyContext context, JsonObject input, Proof proof)
-      throws GeneralSecurityException, DidStoreException;
+  void verifyProof(VerifyContext context, JsonObject input, Proof proof)
+      throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException;
 
 }

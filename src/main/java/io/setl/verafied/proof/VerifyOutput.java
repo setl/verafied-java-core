@@ -21,11 +21,16 @@
 package io.setl.verafied.proof;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import io.setl.verafied.UnacceptableDocumentException;
 
 /**
  * The result of a cryptographic verification.
@@ -37,22 +42,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 )
 public class VerifyOutput implements Serializable {
 
-  public static final VerifyOutput OK_CREDENTIAL = new VerifyOutput(true, null, VerifyType.CREDENTIAL);
+  public static final VerifyOutput OK = new VerifyOutput();
 
-  public static final VerifyOutput OK_JSON = new VerifyOutput(true, null, VerifyType.SIGNED_JSON);
-
-  public static final VerifyOutput OK_PRESENTATION = new VerifyOutput(true, null, VerifyType.PRESENTATION);
+  private static final long serialVersionUID = 1L;
 
 
-  public static VerifyOutput fail(String detail, VerifyType verifyType) {
-    return new VerifyOutput(false, detail, verifyType);
+  public static VerifyOutput fail(
+      String code,
+      String message,
+      Map<String, Object> parameters
+  ) {
+    return new VerifyOutput(code, message, parameters);
   }
 
 
   @Schema(
-      description = "An optional detail message which should indicate the reason for any verification failure."
+      description = "The error code, if the document failed to verify"
   )
-  private final String detail;
+  private final String code;
 
   @Schema(
       description = "If true, the document verified."
@@ -60,37 +67,94 @@ public class VerifyOutput implements Serializable {
   private final boolean isOk;
 
   @Schema(
-      description = "The kind of verification that was performed."
+      description = "An optional detail message which should indicate the reason for any verification failure."
   )
-  private final VerifyType verifyType;
+  private final String message;
+
+  @Schema(
+      description = "Parameters related to the error code, if the document failed to verify."
+  )
+  private final transient Map<String, Object> parameters;
+
+
+  /**
+   * Transform an unacceptable document exception into a verify output instance.
+   *
+   * @param unacceptable the exception
+   */
+  public VerifyOutput(UnacceptableDocumentException unacceptable) {
+    isOk = false;
+    code = unacceptable.getCode();
+    message = unacceptable.getMessage();
+    parameters = unacceptable.getParameters();
+  }
 
 
   /**
    * New instance.
    *
    * @param isOk       did the input verify?
-   * @param detail     the detail of why verification failed, if it did
-   * @param verifyType the verification type performed.
+   * @param code       the error code indication why verification failed, if it did
+   * @param message    the detail of why verification failed, if it did
+   * @param parameters parameters associated with the verification failure, if it failed
    */
+  @JsonCreator
   public VerifyOutput(
-      @JsonProperty("ok") boolean isOk,
-      @JsonProperty("detail") String detail,
-      @JsonProperty("verifyType") VerifyType verifyType
+      @JsonProperty(value = "ok", required = true) boolean isOk,
+      @JsonProperty("code") String code,
+      @JsonProperty("message") String message,
+      @JsonProperty("parameters") Map<String, Object> parameters
   ) {
     this.isOk = isOk;
-    this.detail = detail;
-    this.verifyType = verifyType;
+    this.message = message;
+    this.code = code;
+    this.parameters = (parameters != null) ? Map.copyOf(parameters) : Map.of();
+  }
+
+
+  /**
+   * New instance for a failed verification.
+   *
+   * @param message the detail of why verification failed, if it did
+   */
+  public VerifyOutput(
+      String code,
+      String message,
+      Map<String, Object> parameters
+  ) {
+    isOk = false;
+    this.code = Objects.requireNonNull(code);
+    this.message = Objects.requireNonNull(message);
+    this.parameters = (parameters != null) ? Map.copyOf(parameters) : Map.of();
+  }
+
+
+  /**
+   * New instance for a successful verification.
+   */
+  public VerifyOutput() {
+    isOk = true;
+    code = null;
+    message = null;
+    parameters = Map.of();
   }
 
 
   @JsonInclude(Include.NON_EMPTY)
-  public String getDetail() {
-    return detail;
+  public String getCode() {
+    return code;
   }
 
 
-  public VerifyType getVerifyType() {
-    return verifyType;
+  @JsonInclude(Include.NON_EMPTY)
+  public String getMessage() {
+    return message;
+  }
+
+
+  @JsonInclude(Include.NON_EMPTY)
+  public Map<String, Object> getParameters() {
+    return Map.copyOf(parameters);
   }
 
 
@@ -98,5 +162,21 @@ public class VerifyOutput implements Serializable {
     return isOk;
   }
 
+
+  private Object readResolve() {
+    return new VerifyOutput(isOk, code, message, Map.of());
+  }
+
+
+  /**
+   * If this result indicates a failure, transform the failure into an exception and throw it.
+   *
+   * @throws UnacceptableDocumentException if this result indicated a failure
+   */
+  public void throwIfFailed() throws UnacceptableDocumentException {
+    if (!isOk) {
+      throw new UnacceptableDocumentException(code, message, parameters);
+    }
+  }
 
 }

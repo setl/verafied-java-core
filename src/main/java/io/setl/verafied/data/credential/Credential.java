@@ -83,6 +83,9 @@ public class Credential implements Provable {
   private Set<String> type = MINIMAL_TYPE;
 
 
+  /**
+   * New instance.
+   */
   public Credential() {
     context = CredentialConstants.getStandardContext();
     issuanceDate = CredentialConstants.getClock().instant();

@@ -24,19 +24,15 @@ import static io.setl.verafied.CredentialConstants.logSafe;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 import io.setl.verafied.CredentialConstants;
+import io.setl.verafied.UnacceptableDocumentException;
 import io.setl.verafied.data.TypedKeyPair;
 import io.setl.verafied.did.DidStoreException;
 import io.setl.verafied.proof.ProofContext;
 import io.setl.verafied.proof.ProvableApi;
 import io.setl.verafied.proof.VerifyContext;
-import io.setl.verafied.proof.VerifyOutput;
-import io.setl.verafied.proof.VerifyType;
 import io.setl.verafied.revocation.RevocationChecker;
 
 /**
@@ -47,8 +43,6 @@ import io.setl.verafied.revocation.RevocationChecker;
 public class CredentialApi {
 
   private static final String CREDENTIAL = "Credential";
-
-  private static final Logger logger = LoggerFactory.getLogger(CredentialApi.class);
 
 
   /**
@@ -64,14 +58,13 @@ public class CredentialApi {
       ProofContext proofContext,
       Credential credential,
       TypedKeyPair keyPair
-  ) throws GeneralSecurityException {
+  ) throws GeneralSecurityException, UnacceptableDocumentException {
     if (credential.getId() == null) {
-      throw new IllegalArgumentException("Credential will not be signed as it has no ID");
+      throw new UnacceptableDocumentException("credential_missing_id", "Credential is required to have an ID", Map.of());
     }
-    AtomicReference<String> holder = new AtomicReference<>();
-    if (!(verifyType(credential, holder) && verifyDates(credential, holder))) {
-      throw new IllegalArgumentException("Credential cannot be signed as it is not valid: " + holder.get());
-    }
+
+    verifyType(credential);
+    verifyDates(credential);
 
     proofContext.getProver().attachProof(proofContext, credential, keyPair);
   }
@@ -87,23 +80,21 @@ public class CredentialApi {
    *   <li>It has a valid proof.</li>
    * </ol>
    */
-  public static VerifyOutput verify(Credential credential, VerifyContext context, RevocationChecker revocationStore) throws DidStoreException {
-    AtomicReference<String> holder = new AtomicReference<>();
-    boolean isOk =
-        verifyType(credential, holder)
-            && verifyDates(credential, holder)
-            && verifyStatus(credential, revocationStore, holder)
-            && verifyProof(credential, context, holder);
-    return isOk ? VerifyOutput.OK_CREDENTIAL : VerifyOutput.fail(holder.get(), VerifyType.CREDENTIAL);
+  public static void verify(Credential credential, VerifyContext context, RevocationChecker revocationStore)
+      throws DidStoreException, UnacceptableDocumentException {
+    verifyType(credential);
+    verifyDates(credential);
+    verifyStatus(credential, revocationStore);
+    verifyProof(credential, context);
   }
 
 
   /**
    * Verify that the issuance date is in the past and the expiration date is in the future.
    *
-   * @return true if OK
+   * @throws UnacceptableDocumentException if there is a problem
    */
-  private static boolean verifyDates(Credential credential, AtomicReference<String> holder) {
+  private static void verifyDates(Credential credential) throws UnacceptableDocumentException {
     Instant atTime = CredentialConstants.getClock().instant();
 
     if (credential.getExpirationDate() != null && credential.getExpirationDate().isBefore(atTime)) {
@@ -111,9 +102,9 @@ public class CredentialApi {
       String message = String.format("Credential %s NOT verified as it expired at %s and it is now %s",
           logSafe(credential.getId().toString()), credential.getExpirationDate(), atTime
       );
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("credential_expired", message,
+          Map.of("id", credential.getId(), "expires", credential.getExpirationDate(), "now", atTime)
+      );
     }
 
     if (credential.getIssuanceDate() != null && credential.getIssuanceDate().isAfter(atTime)) {
@@ -121,12 +112,10 @@ public class CredentialApi {
       String message = String.format("Credential %s NOT verified as it will not be issued until %s and it is now %s",
           logSafe(credential.getId().toString()), credential.getIssuanceDate(), atTime
       );
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("credential_not_issued_yet", message,
+          Map.of("id", credential.getId(), "expires", credential.getIssuanceDate(), "now", atTime)
+      );
     }
-
-    return true;
   }
 
 
@@ -135,8 +124,8 @@ public class CredentialApi {
    *
    * @return true if OK
    */
-  private static boolean verifyProof(Credential credential, VerifyContext verifyContext, AtomicReference<String> holder) throws DidStoreException {
-    return ProvableApi.verifyProof(credential.getProof(), credential, CREDENTIAL, credential.getId(), verifyContext, holder);
+  private static void verifyProof(Credential credential, VerifyContext verifyContext) throws DidStoreException, UnacceptableDocumentException {
+    ProvableApi.verifyProof(credential.getProof(), credential, CREDENTIAL, credential.getId(), verifyContext);
   }
 
 
@@ -147,18 +136,17 @@ public class CredentialApi {
    *
    * @return true if OK
    */
-  private static boolean verifyStatus(Credential credential, RevocationChecker revocationStore, AtomicReference<String> holder) {
-    if (credential.getCredentialStatus() != null && revocationStore != null
-        && revocationStore.test(credential.getCredentialStatus().getType(), credential.getIssuer(), credential.getId())
+  private static void verifyStatus(Credential credential, RevocationChecker revocationStore) throws UnacceptableDocumentException {
+    CredentialStatus status = credential.getCredentialStatus();
+    if (status != null && revocationStore != null
+        && revocationStore.test(status.getType(), credential.getIssuer(), credential.getId())
     ) {
       // has been revoked
       String message = String.format("Credential %s NOT verified as it has been revoked", logSafe(credential.getId().toString()));
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("credential_is_revoked", message,
+          Map.of("id", credential.getId(), "issuer", credential.getIssuer(), "statusType", status.getType())
+      );
     }
-
-    return true;
   }
 
 
@@ -167,10 +155,9 @@ public class CredentialApi {
    *
    * @return true if OK
    */
-  private static boolean verifyType(Credential credential, AtomicReference<String> holder) {
-    return
-        ProvableApi.verifyContext(credential.getContext(), CREDENTIAL, credential.getId(), holder)
-            && ProvableApi.verifyType(credential.getType(), CREDENTIAL, credential.getId(), holder, CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+  private static void verifyType(Credential credential) throws UnacceptableDocumentException {
+    ProvableApi.verifyContext(credential.getContext(), CREDENTIAL, credential.getId());
+    ProvableApi.verifyType(credential.getType(), CREDENTIAL, credential.getId(), CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
   }
 
 

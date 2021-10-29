@@ -24,18 +24,16 @@ import static io.setl.verafied.CredentialConstants.logSafe;
 
 import java.security.GeneralSecurityException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.setl.verafied.CredentialConstants;
+import io.setl.verafied.UnacceptableDocumentException;
 import io.setl.verafied.data.JsonConvert;
 import io.setl.verafied.data.Proof;
 import io.setl.verafied.did.DidStoreException;
@@ -47,25 +45,26 @@ import io.setl.verafied.did.DidStoreException;
  */
 public class ProvableApi {
 
-  private static final Logger logger = LoggerFactory.getLogger(ProvableApi.class);
+  private static final String DOCUMENT_TYPE = "documentType";
+
+  private static final String JSON_TYPE = "jsonType";
 
 
   /**
    * Get the data types given in a JSON-LD type specification.
    *
-   * @param types  either a string or an array of strings
-   * @param type   the type of the document
-   * @param id     the id of the document
-   * @param holder holder of error messages
+   * @param types either a string or an array of strings
+   * @param type  the type of the document
+   * @param id    the id of the document
    *
-   * @return set of types, or null on failure
+   * @return set of types
+   *
+   * @throws UnacceptableDocumentException if the type specification is missing or invalid
    */
-  public static Set<String> getTypes(JsonValue types, String type, Object id, AtomicReference<String> holder) {
+  public static Set<String> getTypes(JsonValue types, String type, Object id) throws UnacceptableDocumentException {
     if (types == null) {
       String message = String.format("%s %s NOT verified as it does not specify any types", type, logSafe(String.valueOf(id)));
-      holder.set(message);
-      logger.debug(message);
-      return null;
+      throw new UnacceptableDocumentException("document_has_no_types", message, Map.of("id", id));
     }
 
     Set<String> typeSet;
@@ -75,9 +74,9 @@ public class ProvableApi {
 
     if (types.getValueType() != ValueType.ARRAY) {
       String message = String.format("%s %s NOT verified as its type specification is a %s", type, logSafe(String.valueOf(id)), types.getValueType());
-      holder.set(message);
-      logger.debug(message);
-      return null;
+      throw new UnacceptableDocumentException("document_bad_type_specifier", message,
+          Map.of(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, types.getValueType())
+      );
     }
 
     JsonArray array = types.asJsonArray();
@@ -85,16 +84,14 @@ public class ProvableApi {
     for (JsonValue jv : array) {
       if (jv == null) {
         String message = String.format("%s %s NOT verified as its type specification contains a null", type, logSafe(String.valueOf(id)));
-        holder.set(message);
-        logger.debug(message);
-        return null;
+        throw new UnacceptableDocumentException("document_contains_null_type", message, Map.of(DOCUMENT_TYPE, type, "id", id));
       }
 
       if (jv.getValueType() != ValueType.STRING) {
         String message = String.format("%s %s NOT verified as its type specification contains a %s", type, logSafe(String.valueOf(id)), jv.getValueType());
-        holder.set(message);
-        logger.debug(message);
-        return null;
+        throw new UnacceptableDocumentException("document_bad_contained_type_specifier", message,
+            Map.of(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, jv.getValueType())
+        );
       }
 
       typeSet.add(((JsonString) jv).getString());
@@ -105,17 +102,15 @@ public class ProvableApi {
 
 
   /**
-   * Verify that this credential correctly declares its type as "VerifiableCredential" and has the W3C context.
+   * Verify that this document correctly declares the W3C context.
    *
-   * @return true if OK
+   * @throws UnacceptableDocumentException if the W3C context is missing or invalid
    */
-  public static boolean verifyContext(JsonValue ctxtValue, String type, Object id, AtomicReference<String> holder) {
+  public static void verifyContext(JsonValue ctxtValue, String type, Object id) throws UnacceptableDocumentException {
     JsonString ctxtString = null;
     if (ctxtValue == null) {
       String message = String.format("%s %s does not specify an \"@context\" value", type, logSafe(String.valueOf(id)));
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("document_context_missing", message, Map.of(DOCUMENT_TYPE, type, "id", id));
     }
 
     if (ctxtValue.getValueType() == ValueType.STRING) {
@@ -132,9 +127,9 @@ public class ProvableApi {
       }
     } else {
       String message = String.format("%s %s does not specify a valid \"@context\" value", type, logSafe(String.valueOf(id)));
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("document_context_bad_type", message,
+          Map.of(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, ctxtValue.getValueType())
+      );
     }
 
     if (ctxtString == null || !ctxtString.getString().equals(CredentialConstants.CREDENTIAL_CONTEXT)) {
@@ -142,69 +137,58 @@ public class ProvableApi {
       String message = String.format("%s %s NOT verified as missing context: %s",
           type, logSafe(String.valueOf(id)), logSafe(ctxtValue.toString())
       );
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("document_context_w3c_must_be_first", message,
+          Map.of(DOCUMENT_TYPE, type, "id", id, "context", ctxtValue)
+      );
     }
-
-    return true;
   }
 
 
   /**
    * Verify that the cryptographic proof for this is correct.
    *
-   * @return true if OK
+   * @throws UnacceptableDocumentException if the proof is invalid
+   * @throws DidStoreException             if the signing DIDs cannot be accessed
    */
-  public static boolean verifyProof(Proof myProof, Object document, String type, Object id, VerifyContext verifyContext, AtomicReference<String> holder)
-      throws DidStoreException {
+  public static void verifyProof(Proof myProof, Object document, String type, Object id, VerifyContext verifyContext)
+      throws DidStoreException, UnacceptableDocumentException {
     // The input must contain a 'proof'
     if (myProof == null) {
       String message = String.format("%s %s has not been proved", type, logSafe(String.valueOf(id)));
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("document_no_proof", message, Map.of(DOCUMENT_TYPE, type, "id", id));
     }
 
     JsonObject input = (JsonObject) JsonConvert.toJson(document);
     CanonicalJsonWithJws verifier = new CanonicalJsonWithJws();
     try {
-      VerifyOutput verifyOutput = verifier.verifyProof(verifyContext, input, myProof);
-      if (!verifyOutput.isOk()) {
-        String message = String.format("%s %s has a bad signature: %s", type, logSafe(String.valueOf(id)), verifyOutput.getDetail());
-        holder.set(message);
-        logger.debug(message);
-        return false;
-      }
+      verifier.verifyProof(verifyContext, input, myProof);
     } catch (GeneralSecurityException e) {
       // Proof object is invalid
       String message = String.format("%s %s proof did not verify", type, logSafe(String.valueOf(id)));
-      holder.set(message);
-      logger.debug(message, e);
-      return false;
+      throw new UnacceptableDocumentException(
+          "document_proof_error", message,
+          Map.of(DOCUMENT_TYPE, type, "id", id, "errorMessage", e.toString(), "error", e)
+      );
     }
-
-    return true;
   }
 
 
   /**
-   * Verify if a JSON-LD document specifies one of the required types.
+   * Verify if a JSON-LD document specifies the required type.
    *
-   * @param types  the types on the document
-   * @param type   the type of the document
-   * @param id     the ID of the document
-   * @param holder holder for error messages
-   * @param match  the type to match
+   * @param types the types on the document
+   * @param type  the type of the document
+   * @param id    the ID of the document
+   * @param match the type to match
    *
-   * @return true if the type matches, false otherwise and the holder will be updated as to why
+   * @throws UnacceptableDocumentException if the document does not have the type
    */
-  public static boolean verifyType(Set<String> types, String type, Object id, AtomicReference<String> holder, String match) {
+  public static void verifyType(Set<String> types, String type, Object id, String match) throws UnacceptableDocumentException {
     if (types == null) {
       String message = String.format("%s %s NOT verified as it does not specify any types", type, logSafe(String.valueOf(id)));
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("document_type_is_null", message,
+          Map.of(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
+      );
     }
 
     if (!types.contains(match)) {
@@ -212,12 +196,10 @@ public class ProvableApi {
       String message = String.format("%s %s NOT verified as not correct type of \"%s\": %s",
           type, logSafe(String.valueOf(id)), match, logSafe(types.toString())
       );
-      holder.set(message);
-      logger.debug(message);
-      return false;
+      throw new UnacceptableDocumentException("document_type_missing", message,
+          Map.of(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
+      );
     }
-
-    return true;
   }
 
 

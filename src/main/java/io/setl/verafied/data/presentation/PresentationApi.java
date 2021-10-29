@@ -20,14 +20,11 @@
 
 package io.setl.verafied.data.presentation;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.setl.verafied.CredentialConstants;
+import io.setl.verafied.UnacceptableDocumentException;
 import io.setl.verafied.did.DidStoreException;
 import io.setl.verafied.proof.ProvableApi;
 import io.setl.verafied.proof.VerifyContext;
-import io.setl.verafied.proof.VerifyOutput;
-import io.setl.verafied.proof.VerifyType;
 
 /**
  * Utility methods related to signing and verifying a verifiable presentation.
@@ -45,14 +42,12 @@ public class PresentationApi {
    * @param presentation  the presentation
    * @param verifyContext the context for the signature verification
    *
-   * @return result of the verification
+   * @throws UnacceptableDocumentException if the document does not verify
+   * @throws DidStoreException             if the signing DID cannot be retrieved
    */
-  public static VerifyOutput verify(Presentation presentation, VerifyContext verifyContext) throws DidStoreException {
-    AtomicReference<String> holder = new AtomicReference<>();
-    boolean isOk =
-        verifyType(presentation, holder)
-            && verifyProof(presentation, verifyContext, holder);
-    return isOk ? VerifyOutput.OK_CREDENTIAL : VerifyOutput.fail(holder.get(), VerifyType.CREDENTIAL);
+  public static void verify(Presentation presentation, VerifyContext verifyContext) throws DidStoreException, UnacceptableDocumentException {
+    verifyType(presentation);
+    verifyProof(presentation, verifyContext);
   }
 
 
@@ -64,21 +59,17 @@ public class PresentationApi {
    *
    * @return result of the verification
    */
-  private static boolean verifyProof(Presentation presentation, VerifyContext verifyContext, AtomicReference<String> holder) throws DidStoreException {
-    return ProvableApi.verifyProof(presentation.getProof(), presentation, PRESENTATION, presentation.getId(), verifyContext, holder);
-
+  private static void verifyProof(Presentation presentation, VerifyContext verifyContext) throws DidStoreException, UnacceptableDocumentException {
+    ProvableApi.verifyProof(presentation.getProof(), presentation, PRESENTATION, presentation.getId(), verifyContext);
   }
 
 
   /**
    * Verify that this credential correctly declares its type as "VerifiablePresentation" and has the W3C context.
-   *
-   * @return true if OK
    */
-  private static boolean verifyType(Presentation presentation, AtomicReference<String> holder) {
-    return
-        ProvableApi.verifyContext(presentation.getContext(), PRESENTATION, presentation.getId(), holder)
-            && ProvableApi.verifyType(presentation.getType(), PRESENTATION, presentation.getId(), holder, CredentialConstants.VERIFIABLE_PRESENTATION_TYPE);
+  private static void verifyType(Presentation presentation) throws UnacceptableDocumentException {
+    ProvableApi.verifyContext(presentation.getContext(), PRESENTATION, presentation.getId());
+    ProvableApi.verifyType(presentation.getType(), PRESENTATION, presentation.getId(), CredentialConstants.VERIFIABLE_PRESENTATION_TYPE);
   }
 
 

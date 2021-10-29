@@ -30,6 +30,7 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import io.setl.json.CJObject;
 import io.setl.verafied.CredentialConstants;
+import io.setl.verafied.UnacceptableDocumentException;
 import io.setl.verafied.data.Proof;
 import io.setl.verafied.data.Provable;
 import io.setl.verafied.data.TypedKeyPair;
@@ -103,23 +105,29 @@ public class CanonicalJsonWithJws implements Prover {
 
   @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
   @Override
-  public VerifyOutput verifyProof(VerifyContext context, JsonObject input, Proof proof)
-      throws GeneralSecurityException, DidStoreException {
+  public void verifyProof(VerifyContext context, JsonObject input, Proof proof)
+      throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
     // The only proof type we support is 'CanonicalJsonWithJws'
     if (!"CanonicalJsonWithJws".equals(proof.getType())) {
-      return VerifyOutput.fail("Proof type is not \"CanonicalJsonWithJws\"", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException(
+          "proof_incorrect_type",
+          "Proof type is not \"CanonicalJsonWithJws\""
+      );
     }
 
     // The proof must contain a "jws" value, which is not part of what was proved
     String jws = proof.get(String.class, "jws");
     if (jws == null || jws.isEmpty()) {
-      return VerifyOutput.fail("Proof does not contain a \"jws\" value", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_missing_jws", "Proof does not contain a \"jws\" value");
     }
 
     // Lets check the JWS value .. it must have a detached payload so ".." in the middle
     int dotDotIndex = jws.indexOf("..");
     if (dotDotIndex == -1) {
-      return VerifyOutput.fail("JWS value is not <header>..<signature>", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException(
+          "proof_jws_not_detached",
+          "JWS value is not <header>..<signature>"
+      );
     }
 
     // Extract the header and translate it from Base 64 URL
@@ -129,7 +137,9 @@ public class CanonicalJsonWithJws implements Prover {
       b64 = Base64.getUrlDecoder().decode(b64Ascii);
     } catch (IllegalArgumentException e) {
       // It wasn't perfect Base 64 URL
-      return VerifyOutput.fail("JWS header contains an invalid Base64-URL character", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_header_bad_base64", "JWS header contains an invalid Base64-URL character",
+          Map.of("header", jws.substring(0, dotDotIndex))
+      );
     }
 
     // The header should be a valid Json Object
@@ -139,18 +149,20 @@ public class CanonicalJsonWithJws implements Prover {
     ) {
       jsonObject = reader.readObject();
     } catch (JsonException e) {
-      return VerifyOutput.fail("JWS header contains invalid JSON", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_header_bad_json", "JWS header contains invalid JSON",
+          Map.of("badJson", new String(b64, UTF_8))
+      );
     }
 
     // For a detached payload, the header must specify "b64:false"
     if (!JsonValue.FALSE.equals(jsonObject.get("b64"))) {
-      return VerifyOutput.fail("JWS header does not specify b64=false", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_header_missing_b64", "JWS header does not specify b64=false");
     }
 
     // The "alg" is required in the header.
     String headerAlg = jsonObject.getString("alg", null);
     if (headerAlg == null || headerAlg.isEmpty()) {
-      return VerifyOutput.fail("JWS header does not specify an 'alg'", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_header_missing_alg", "JWS header does not specify an 'alg'");
     }
 
     // The "alg" must be a known algorithm.
@@ -158,11 +170,15 @@ public class CanonicalJsonWithJws implements Prover {
     try {
       inputAlg = SigningAlgorithm.get(headerAlg);
     } catch (IllegalArgumentException e) {
-      return VerifyOutput.fail("JWS header does not specify a valid 'alg'", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_header_invalid_alg", "JWS header does not specify a valid 'alg'",
+          Map.of("alg", headerAlg)
+      );
     }
     if (inputAlg == SigningAlgorithm.NONE) {
       // "NONE" is not a valid value
-      return VerifyOutput.fail("JWS header specifies NONE for 'alg'", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_header_alg_is_none", "JWS header does not specify NONE for 'alg'",
+          Map.of("alg", headerAlg)
+      );
     }
     context.setAlgorithm(inputAlg);
     // JWS header is OK.
@@ -171,15 +187,13 @@ public class CanonicalJsonWithJws implements Prover {
     try {
       context.setAllegedSignature(Base64.getUrlDecoder().decode(jws.substring(dotDotIndex + 2)));
     } catch (IllegalArgumentException e) {
-      return VerifyOutput.fail("JWS Signature contains an invalid Base64-URL character", VerifyType.SIGNED_JSON);
+      throw new UnacceptableDocumentException("proof_jws_signature_bad_base64", "JWS Signature contains an invalid Base64-URL character",
+          Map.of("signature", jws.substring(dotDotIndex + 2))
+      );
     }
 
     // The proof should specify a verification method which is known to us.
-    try {
-      context.findVerificationMethod(proof);
-    } catch (VerifyOutputException failure) {
-      return failure.getVerifyOutput();
-    }
+    context.findVerificationMethod(proof);
 
     // create a canonical copy of the input without the jws value
     CJObject jsonInput = JWS_POINTER.remove(new CJObject(input));
@@ -194,7 +208,8 @@ public class CanonicalJsonWithJws implements Prover {
     byte[] toSignBytes = signingBuffer.toByteArray();
     context.setBytesToSign(toSignBytes);
 
-    return context.verify();
+    // Verify the signature
+    context.verify();
   }
 
 }

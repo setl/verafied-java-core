@@ -30,6 +30,8 @@ import java.security.KeyPair;
 import javax.json.JsonStructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import io.setl.verafied.data.JsonConvert;
 
@@ -38,6 +40,7 @@ import io.setl.verafied.data.JsonConvert;
  */
 public class PublicKeyJwkFactoryTest {
 
+  @SuppressWarnings("java:S5785")
   public static void testAlgorithm(SigningAlgorithm algorithm) throws GeneralSecurityException, JsonProcessingException {
     KeyPair keyPair = algorithm.createKeyPair();
     PublicKeyJwk jwk = PublicKeyJwkFactory.from(keyPair.getPublic());

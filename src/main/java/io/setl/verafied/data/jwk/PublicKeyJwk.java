@@ -66,7 +66,7 @@ public abstract class PublicKeyJwk {
   private String use;
 
 
-  public PublicKeyJwk() {
+  protected PublicKeyJwk() {
     use = "sig";
   }
 
@@ -76,7 +76,7 @@ public abstract class PublicKeyJwk {
    *
    * @param toCopy the instance to copy
    */
-  public PublicKeyJwk(PublicKeyJwk toCopy) {
+  protected PublicKeyJwk(PublicKeyJwk toCopy) {
     keyId = toCopy.keyId;
     use = toCopy.use;
   }
