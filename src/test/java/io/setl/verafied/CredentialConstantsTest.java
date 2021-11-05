@@ -18,10 +18,12 @@ public class CredentialConstantsTest {
 
   @Test
   public void testLogSafe() {
+    UnaryOperator<String> original = CredentialConstants.getLogSafe();
     UnaryOperator<String> safer = String::toUpperCase;
     CredentialConstants.setLogSafe(safer);
     assertSame(safer, CredentialConstants.getLogSafe());
     assertEquals("FRED", CredentialConstants.logSafe("Fred"));
+    CredentialConstants.setLogSafe(original);
   }
 
 
@@ -36,9 +38,11 @@ public class CredentialConstantsTest {
 
   @Test
   public void testStandardContext() {
+    JsonValue original = CredentialConstants.getStandardContext();
     JsonValue value = JsonProvider.provider().createValue("my context");
     CredentialConstants.setStandardContext(value);
     assertEquals(value, CredentialConstants.getStandardContext());
+    CredentialConstants.setStandardContext(original);
   }
 
 }

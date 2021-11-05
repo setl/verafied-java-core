@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.json.JsonValue;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import io.setl.verafied.CredentialConstants;
 import io.setl.verafied.data.Proof;
@@ -36,6 +37,7 @@ import io.setl.verafied.data.credential.Credential;
  *
  * @author Simon Greatrix on 04/11/2021.
  */
+@SuppressFBWarnings("EI_EXPOSE_REP2") // The Presentation class creates defensive copies, so no need to do it here
 public final class PresentationBuilder {
 
   private JsonValue context = Presentation.DEFAULT_CONTEXT;

@@ -28,6 +28,7 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import io.setl.verafied.CredentialConstants;
 import io.setl.verafied.data.Proof;
@@ -37,6 +38,7 @@ import io.setl.verafied.data.Proof;
  *
  * @author Simon Greatrix on 03/11/2021.
  */
+@SuppressFBWarnings("EI_EXPOSE_REP2") // The Credential class creates defensive copies, so no need to do it here
 public final class CredentialBuilder {
 
   private JsonValue context;
