@@ -27,12 +27,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.Base64;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import javax.json.JsonStructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.swagger.v3.oas.annotations.media.Schema;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.edec.EdECObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.sec.SECObjectIdentifiers;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.junit.Test;
 
 import io.setl.json.Canonical;
@@ -68,8 +74,11 @@ public class PublicKeyJwkFactoryTest {
     assertFalse(jwk.equals(jwk2));
   }
 
-  @Test
-  public void test() {
+
+  /**
+   * Utility to create a key pair to use in tests.
+   */
+  public void createKeyPair() {
     SigningAlgorithm algorithm = SigningAlgorithm.PS256;
     KeyPair keyPair = algorithm.createKeyPair();
     PublicKeyJwk jwk = PublicKeyJwkFactory.from(keyPair.getPublic());
@@ -77,6 +86,27 @@ public class PublicKeyJwkFactoryTest {
     System.out.println(Canonical.cast(json).toPrettyString());
 
     System.out.println(Base64.getMimeEncoder().encodeToString(keyPair.getPrivate().getEncoded()));
+  }
+
+
+  @Test
+  public void testSetFactories() {
+    var originals = PublicKeyJwkFactory.getFactories();
+
+    ConcurrentHashMap<ASN1ObjectIdentifier, BiFunction<PublicKey, SubjectPublicKeyInfo, PublicKeyJwk>> map = new ConcurrentHashMap<>();
+    map.put(EdECObjectIdentifiers.id_Ed25519, (pk, spki) -> new PublicKeyJwkOkp("Ed25519", spki));
+    map.put(EdECObjectIdentifiers.id_Ed448, (pk, spki) -> new PublicKeyJwkOkp("Ed448", spki));
+    PublicKeyJwkFactory.setFactories(map);
+    assertEquals(map, PublicKeyJwkFactory.getFactories());
+
+    map.put(PKCSObjectIdentifiers.rsaEncryption, (pk, spki) -> new PublicKeyJwkRsa(pk));
+    assertEquals(map, PublicKeyJwkFactory.getFactories());
+
+    PublicKeyJwkFactory.setFactory(SECObjectIdentifiers.secp256r1, (pk, spki) -> new PublicKeyJwkEc("P-256", pk));
+    assertEquals(map, PublicKeyJwkFactory.getFactories());
+    assertEquals(4, map.size());
+
+    PublicKeyJwkFactory.setFactories(new ConcurrentHashMap<>(originals));
   }
 
 }

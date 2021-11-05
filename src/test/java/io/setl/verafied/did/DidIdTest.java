@@ -14,6 +14,7 @@ import org.junit.Test;
  */
 public class DidIdTest {
 
+  @SuppressWarnings("java:S5785") // for testing of equals(Object)
   @Test
   public void test() {
     URI uri = URI.create("did:setl:abcdef/foo/bar?a=b&c=d#1234");
@@ -30,7 +31,7 @@ public class DidIdTest {
     assertEquals(did1.hashCode(), did2.hashCode());
     assertTrue(did1.isValid());
     assertTrue(did2.isValid());
-    assertEquals(did1, did1);
+    assertTrue(did1.equals(did1));
     assertEquals(uri.toString(), did1.toString());
   }
 

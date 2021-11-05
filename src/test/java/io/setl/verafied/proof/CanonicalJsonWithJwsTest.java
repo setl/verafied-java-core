@@ -17,70 +17,51 @@ public class CanonicalJsonWithJwsTest {
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testBadHeaderB64() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "!!!!..abcd");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("!!!!..abcd");
   }
 
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testBadHeaderBadAlg1() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "eyJiNjQiOmZhbHNlfQ..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("eyJiNjQiOmZhbHNlfQ..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
   }
 
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testBadHeaderBadAlg2() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "eyJhbGciOiJIUzI1NiIsImI2NCI6ZmFsc2V9..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("eyJhbGciOiJIUzI1NiIsImI2NCI6ZmFsc2V9..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
   }
 
 
   @Test(expected = UnacceptableDocumentException.class)
-
   public void testBadHeaderBadAlg3() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "eyJiNjQiOmZhbHNlLCJhbGciOiJOT05FIn0..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("eyJiNjQiOmZhbHNlLCJhbGciOiJOT05FIn0..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
   }
 
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testBadHeaderJson() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
+    ;
   }
 
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testBadHeaderNoB4() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "eyJhbGciOiJIUzI1NiIsImI2NCI6MX0..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("eyJhbGciOiJIUzI1NiIsImI2NCI6MX0..SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
   }
 
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testBadSignatureB64() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
+    testJws("eyJiNjQiOmZhbHNlLCJhbGciOiJFUzI1NiJ9..!!!!");
+  }
+
+
+  private void testJws(String jwsValue) throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
     Proof proof = new Proof();
     proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "eyJiNjQiOmZhbHNlLCJhbGciOiJFUzI1NiJ9..!!!!");
+    proof.set("jws", jwsValue);
     CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
     jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
   }
@@ -88,11 +69,7 @@ public class CanonicalJsonWithJwsTest {
 
   @Test(expected = UnacceptableDocumentException.class)
   public void testNoDotDot() throws GeneralSecurityException, DidStoreException, UnacceptableDocumentException {
-    Proof proof = new Proof();
-    proof.setType("CanonicalJsonWithJws");
-    proof.set("jws", "a.b.c");
-    CanonicalJsonWithJws jws = new CanonicalJsonWithJws();
-    jws.verifyProof(new VerifyContext(new TestDidStore()), JsonValue.EMPTY_JSON_OBJECT, proof);
+    testJws("a.b.c");
   }
 
 

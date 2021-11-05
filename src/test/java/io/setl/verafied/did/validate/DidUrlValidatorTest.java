@@ -3,7 +3,6 @@ package io.setl.verafied.did.validate;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,6 +103,49 @@ public class DidUrlValidatorTest {
   }
 
 
+  private void test(MyAnnotation myAnnotation, String goodValue, String badValue, String message) {
+    DidUrlValidator validator = new DidUrlValidator();
+    validator.initialize(myAnnotation);
+    assertTrue(validator.isValid(null, context));
+    assertTrue(validator.isValid(URI.create(goodValue), context));
+    assertFalse(validator.isValid(URI.create(badValue), context));
+    verify(context).buildConstraintViolationWithTemplate(message);
+  }
+
+
+  @Test
+  public void testFragmentBad() {
+    test(
+        new MyAnnotation("", Has.EITHER, Has.EITHER, Has.EITHER),
+        "did:setl:wibble#fragment",
+        "did:setl:wibble#fragm[]",
+        "{io.setl.verafied.did.validate.DidUrl.badFragment}"
+    );
+  }
+
+
+  @Test
+  public void testFragmentNo() {
+    test(
+        new MyAnnotation("", Has.EITHER, Has.EITHER, Has.NO),
+        "did:setl:wibble",
+        "did:setl:wibble#fragment",
+        "{io.setl.verafied.did.validate.DidUrl.fragmentPresent}"
+    );
+  }
+
+
+  @Test
+  public void testFragmentYes() {
+    test(
+        new MyAnnotation("", Has.EITHER, Has.EITHER, Has.YES),
+        "did:setl:wibble#fragment",
+        "did:setl:wibble",
+        "{io.setl.verafied.did.validate.DidUrl.missingFragment}"
+    );
+  }
+
+
   @Test
   public void testIsValid() {
     assertTrue(DidUrlValidator.isValid(URI.create("did:setl:wibble")));
@@ -116,124 +158,83 @@ public class DidUrlValidatorTest {
     assertFalse(DidUrlValidator.isValid(URI.create("did:setl:w%bble/path/1/2?e=f#456")));
   }
 
-  @Test
-  public void testFragmentNo() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.EITHER,Has.NO);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble#fragment"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.fragmentPresent}"));
-  }
-
 
   @Test
-  public void testFragmentYes() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.EITHER,Has.YES);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble#fragment"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.missingFragment}"));
-  }
-
-
-
-  @Test
-  public void testFragmentBad() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.EITHER,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble#fragment"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble#fragm[]"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.badFragment}"));
+  public void testPathBad() {
+    test(
+        new MyAnnotation("", Has.EITHER, Has.EITHER, Has.EITHER),
+        "did:setl:wibble/ab/cd/ef/",
+        "did:setl:wibble/ab[]/cde",
+        "{io.setl.verafied.did.validate.DidUrl.badPath}"
+    );
   }
 
 
   @Test
   public void testPathNo() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.NO,Has.EITHER,Has.EITHER);
+    test(
+        new MyAnnotation("", Has.NO, Has.EITHER, Has.EITHER),
+        "did:setl:wibble",
+        "did:setl:wibble/path/a",
+        "{io.setl.verafied.did.validate.DidUrl.pathPresent}"
+    );
+  }
+
+
+  @Test
+  public void testPathPrefix() {
+    MyAnnotation myAnnotation = new MyAnnotation("/start", Has.YES, Has.EITHER, Has.EITHER);
     DidUrlValidator validator = new DidUrlValidator();
     validator.initialize(myAnnotation);
     assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble/path/a"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.pathPresent}"));
+    assertTrue(validator.isValid(URI.create("did:setl:wibble/start/a/b"), context));
+    assertTrue(validator.isValid(URI.create("did:setl:wibble/starting/a/b"), context));
+    assertFalse(validator.isValid(URI.create("did:setl:wibble/something"), context));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUrl.pathPrefix}");
   }
 
 
   @Test
   public void testPathYes() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.YES,Has.EITHER,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble/abc"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.missingPath}"));
+    test(
+        new MyAnnotation("", Has.YES, Has.EITHER, Has.EITHER),
+        "did:setl:wibble/abc",
+        "did:setl:wibble",
+        "{io.setl.verafied.did.validate.DidUrl.missingPath}"
+    );
   }
-
 
 
   @Test
-  public void testPathBad() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.EITHER,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble/ab/cd/ef/"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble/ab[]/cde"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.badPath}"));
+  public void testQueryBad() {
+    test(
+        new MyAnnotation("", Has.EITHER, Has.EITHER, Has.EITHER),
+        "did:setl:wibble?a=b&c=d",
+        "did:setl:wibble?[]=123",
+        "{io.setl.verafied.did.validate.DidUrl.badQuery}"
+    );
   }
 
-  @Test
-  public void testPathPrefix() {
-    MyAnnotation myAnnotation = new MyAnnotation("/start", Has.YES,Has.EITHER,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble/start/a/b"),context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble/starting/a/b"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble/something"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.pathPrefix}"));
-  }
 
   @Test
   public void testQueryNo() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.NO,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble?abcd"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.queryPresent}"));
+    test(
+        new MyAnnotation("", Has.EITHER, Has.NO, Has.EITHER),
+        "did:setl:wibble",
+        "did:setl:wibble?abcd",
+        "{io.setl.verafied.did.validate.DidUrl.queryPresent}"
+    );
   }
 
 
   @Test
   public void testQueryYes() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.YES,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble?578"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.missingQuery}"));
+    test(
+        new MyAnnotation("", Has.EITHER, Has.YES, Has.EITHER),
+        "did:setl:wibble?578",
+        "did:setl:wibble",
+        "{io.setl.verafied.did.validate.DidUrl.missingQuery}"
+    );
   }
 
-
-
-  @Test
-  public void testQueryBad() {
-    MyAnnotation myAnnotation = new MyAnnotation("", Has.EITHER,Has.EITHER,Has.EITHER);
-    DidUrlValidator validator = new DidUrlValidator();
-    validator.initialize(myAnnotation);
-    assertTrue(validator.isValid(null, context));
-    assertTrue(validator.isValid(URI.create("did:setl:wibble?a=b&c=d"),context));
-    assertFalse(validator.isValid(URI.create("did:setl:wibble?[]=123"),context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUrl.badQuery}"));
-  }
 }

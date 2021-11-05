@@ -27,41 +27,41 @@ public class DidUriValidatorTest {
   @Test
   public void badId1() {
     assertFalse(DidUriValidator.isValid("did", "setl:wibble:", context, false));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.invalidId}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.invalidId}");
   }
 
 
   @Test
   public void badId2() {
     assertFalse(DidUriValidator.isValid("did", "setl:wibb/e", context, false));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.invalidId}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.invalidId}");
   }
 
 
   @Test
   public void badMethod() {
     assertFalse(DidUriValidator.isValid("did", "setl/wibble", context, false));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.missingMethod}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.missingMethod}");
   }
 
 
   @Test
   public void badMethodCase() {
     assertFalse(DidUriValidator.isValid("did", "s*tl:wibble", context, false));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.methodLowerCase}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.methodLowerCase}");
   }
 
 
   @Test
   public void badScheme1() {
     assertFalse(DidUriValidator.isValid("DID", "setl:wibble", context, false));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.badScheme}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.badScheme}");
   }
 
   @Test
   public void badScheme2() {
     assertFalse(DidUriValidator.isValid("ftp", "setl:wibble", context, false));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.badScheme}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.badScheme}");
   }
 
   @Test
@@ -95,7 +95,7 @@ public class DidUriValidatorTest {
     assertTrue(instance.isValid(null, context));
     assertTrue(instance.isValid(URI.create("did:setl:wibble"), context));
     assertFalse(instance.isValid(URI.create("did:setl:wibble#hash"), context));
-    verify(context).buildConstraintViolationWithTemplate(eq("{io.setl.verafied.did.validate.DidUri.fragmentPresent}"));
+    verify(context).buildConstraintViolationWithTemplate("{io.setl.verafied.did.validate.DidUri.fragmentPresent}");
 
     assertFalse(DidUriValidator.isValid(null));
     assertTrue(DidUriValidator.isValid(URI.create("did:setl:wibble")));

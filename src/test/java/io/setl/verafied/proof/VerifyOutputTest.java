@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.Map;
 
 import org.junit.Test;
@@ -37,6 +35,7 @@ public class VerifyOutputTest {
   }
 
 
+  @SuppressWarnings("java:S5785") // for testing of equals(Object)
   @Test
   public void equals() {
     VerifyOutput o1 = new VerifyOutput(true, null, null, null);

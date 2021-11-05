@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.security.InvalidAlgorithmParameterException;
@@ -44,6 +45,7 @@ import io.setl.verafied.data.jwk.PublicKeyJwkFactory;
  */
 public class VerificationMethodTest {
 
+  @SuppressWarnings("java:S5785") // for testing of equals(Object) method
   @Test
   public void tests() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
@@ -59,7 +61,7 @@ public class VerificationMethodTest {
     vm2.setId(URI.create("did:setl:user#wibble"));
     assertEquals(vm, vm2);
     assertEquals(vm.hashCode(), vm2.hashCode());
-    assertEquals(vm,vm);
+    assertTrue(vm.equals(vm));
     assertFalse(vm.equals(null));
     assertFalse(vm.equals(""));
 
