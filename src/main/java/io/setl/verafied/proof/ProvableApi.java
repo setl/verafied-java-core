@@ -83,6 +83,7 @@ public class ProvableApi {
     typeSet = new HashSet<>();
     for (JsonValue jv : array) {
       if (jv == null) {
+        // The SETL Canonical JSON provider will never return a null for a JsonArray member
         String message = String.format("%s %s NOT verified as its type specification contains a null", type, logSafe(String.valueOf(id)));
         throw new UnacceptableDocumentException("document_contains_null_type", message, Map.of(DOCUMENT_TYPE, type, "id", id));
       }

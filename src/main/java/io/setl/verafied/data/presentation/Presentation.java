@@ -34,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import io.setl.verafied.CredentialConstants;
@@ -51,10 +52,11 @@ import io.setl.verafied.did.validate.DidUri;
 @Schema(
     description = "A verifiable presentation"
 )
+@JsonDeserialize(builder = PresentationBuilder.class)
 public class Presentation implements Provable {
 
   /** The default context for a presentation. */
-  private static final JsonArray DEFAULT_CONTEXT = CredentialConstants.JSON_PROVIDER.createArrayBuilder().add(CredentialConstants.CREDENTIAL_CONTEXT).build();
+  static final JsonArray DEFAULT_CONTEXT = CredentialConstants.JSON_PROVIDER.createArrayBuilder().add(CredentialConstants.CREDENTIAL_CONTEXT).build();
 
   /** The applicable contexts. */
   private JsonValue context = DEFAULT_CONTEXT;
@@ -156,11 +158,13 @@ public class Presentation implements Provable {
    * @param newContext the new context.
    */
   public void setContext(JsonValue newContext) {
-    this.context = newContext;
+    checkNotProven();
+    context = newContext;
   }
 
 
   public void setHolder(URI holder) {
+    checkNotProven();
     this.holder = holder;
   }
 
@@ -171,6 +175,7 @@ public class Presentation implements Provable {
    * @param id the identifying URI (optional)
    */
   public void setId(URI id) {
+    checkNotProven();
     this.id = id;
   }
 
@@ -186,12 +191,14 @@ public class Presentation implements Provable {
    * @param newType the new types
    */
   public void setType(Set<String> newType) {
+    checkNotProven();
     LinkedHashSet<String> newSet = new LinkedHashSet<>(newType);
     type = newSet;
   }
 
 
   public void setVerifiableCredential(List<Credential> verifiableCredential) {
+    checkNotProven();
     this.verifiableCredential = List.copyOf(verifiableCredential);
   }
 

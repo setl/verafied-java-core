@@ -21,6 +21,7 @@
 package io.setl.verafied.did;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -58,6 +59,9 @@ public class VerificationMethodTest {
     vm2.setId(URI.create("did:setl:user#wibble"));
     assertEquals(vm, vm2);
     assertEquals(vm.hashCode(), vm2.hashCode());
+    assertEquals(vm,vm);
+    assertFalse(vm.equals(null));
+    assertFalse(vm.equals(""));
 
     PublicKeyJwk jwk = PublicKeyJwkFactory.from(keyPair.getPublic());
     jwk.setKeyId(URI.create("did:setl:user#test"));

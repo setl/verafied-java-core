@@ -24,6 +24,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import io.setl.verafied.CredentialConstants;
@@ -50,9 +52,10 @@ import io.setl.verafied.did.validate.DidUri;
 @Schema(
     description = "A verifiable credential"
 )
+@JsonDeserialize(builder = CredentialBuilder.class)
 public class Credential implements Provable {
 
-  private static final Set<String> MINIMAL_TYPE = Set.of(CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
+  static final Set<String> MINIMAL_TYPE = Set.of(CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
 
   /** The applicable contexts. */
   private JsonValue context = null;
@@ -96,13 +99,6 @@ public class Credential implements Provable {
   @Override
   public JsonObject asJson() {
     return JsonConvert.toJson(this).asJsonObject();
-  }
-
-
-  private void checkUnsigned() {
-    if (proof != null) {
-      throw new IllegalStateException("Cannot change data when a proof is attached");
-    }
   }
 
 
@@ -197,13 +193,13 @@ public class Credential implements Provable {
    * @param newContext the new context.
    */
   public void setContext(JsonValue newContext) {
-    checkUnsigned();
+    checkNotProven();
     context = newContext;
   }
 
 
   public void setCredentialStatus(CredentialStatus credentialStatus) {
-    checkUnsigned();
+    checkNotProven();
     this.credentialStatus = credentialStatus;
   }
 
@@ -214,7 +210,7 @@ public class Credential implements Provable {
    * @param credentialSubject the information
    */
   public void setCredentialSubject(JsonObject credentialSubject) {
-    checkUnsigned();
+    checkNotProven();
     this.credentialSubject = credentialSubject;
   }
 
@@ -225,7 +221,7 @@ public class Credential implements Provable {
    * @param expirationDate the expiration date
    */
   public void setExpirationDate(Instant expirationDate) {
-    checkUnsigned();
+    checkNotProven();
     this.expirationDate = expirationDate;
   }
 
@@ -236,19 +232,19 @@ public class Credential implements Provable {
    * @param id the identifying URI (optional)
    */
   public void setId(URI id) {
-    checkUnsigned();
+    checkNotProven();
     this.id = id;
   }
 
 
   public void setIssuanceDate(Instant issuanceDate) {
-    checkUnsigned();
+    checkNotProven();
     this.issuanceDate = issuanceDate;
   }
 
 
   public void setIssuer(URI issuer) {
-    checkUnsigned();
+    checkNotProven();
     this.issuer = issuer;
   }
 
@@ -264,7 +260,7 @@ public class Credential implements Provable {
    * @param newType the new types
    */
   public void setType(Set<String> newType) {
-    checkUnsigned();
+    checkNotProven();
     if (newType == null || newType.isEmpty()) {
       type = MINIMAL_TYPE;
       return;
@@ -272,7 +268,7 @@ public class Credential implements Provable {
     if (!newType.contains(CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE)) {
       throw new IllegalArgumentException("Type set must contain: " + CredentialConstants.VERIFIABLE_CREDENTIAL_TYPE);
     }
-    type = Set.copyOf(newType);
+    type = new LinkedHashSet<>(newType);
   }
 
 

@@ -23,6 +23,9 @@ package io.setl.verafied.data;
 import java.security.PrivateKey;
 
 import io.setl.verafied.data.jwk.SigningAlgorithm;
+import io.setl.verafied.did.DidId;
+import io.setl.verafied.did.validate.DidUrl.Has;
+import io.setl.verafied.did.validate.DidUrlValidator;
 
 /**
  * Combination of a private key and its JWK signing algorithm.
@@ -34,6 +37,8 @@ public class TypedKeyPair {
   private final SigningAlgorithm algorithm;
 
   private final PrivateKey privateKey;
+
+  private DidId id;
 
 
   /**
@@ -53,8 +58,26 @@ public class TypedKeyPair {
   }
 
 
+  public DidId getId() {
+    return id;
+  }
+
+
   public PrivateKey getPrivateKey() {
     return privateKey;
+  }
+
+
+  /**
+   * Set the ID of this key pair.
+   *
+   * @throws IllegalArgumentException if the DID ID is not valid or is missing a fragment
+   */
+  public void setId(DidId id) {
+    if (id != null && !DidUrlValidator.isValid(id.getUri(), "", Has.EITHER, Has.EITHER, Has.YES)) {
+      throw new IllegalArgumentException("Key ID must be valid and include a fragment: " + id.getUri());
+    }
+    this.id = id;
   }
 
 }

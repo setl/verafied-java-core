@@ -20,7 +20,6 @@
 
 package io.setl.verafied.proof;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
@@ -40,7 +39,7 @@ import io.setl.verafied.UnacceptableDocumentException;
 @Schema(
     description = "The result of a cryptographic verification."
 )
-public class VerifyOutput implements Serializable {
+public class VerifyOutput {
 
   public static final VerifyOutput OK = new VerifyOutput();
 
@@ -74,7 +73,7 @@ public class VerifyOutput implements Serializable {
   @Schema(
       description = "Parameters related to the error code, if the document failed to verify."
   )
-  private final transient Map<String, Object> parameters;
+  private final Map<String, Object> parameters;
 
 
   /**
@@ -140,6 +139,20 @@ public class VerifyOutput implements Serializable {
   }
 
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof VerifyOutput)) {
+      return false;
+    }
+    VerifyOutput that = (VerifyOutput) o;
+    return isOk == that.isOk && Objects.equals(code, that.code) && Objects.equals(message, that.message)
+        && parameters.equals(that.parameters);
+  }
+
+
   @JsonInclude(Include.NON_EMPTY)
   public String getCode() {
     return code;
@@ -158,13 +171,14 @@ public class VerifyOutput implements Serializable {
   }
 
 
-  public boolean isOk() {
-    return isOk;
+  @Override
+  public int hashCode() {
+    return Objects.hash(code, isOk, message, parameters);
   }
 
 
-  private Object readResolve() {
-    return new VerifyOutput(isOk, code, message, Map.of());
+  public boolean isOk() {
+    return isOk;
   }
 
 

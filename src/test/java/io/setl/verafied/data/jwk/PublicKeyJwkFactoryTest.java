@@ -27,12 +27,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.util.Base64;
 import javax.json.JsonStructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.junit.Test;
 
+import io.setl.json.Canonical;
 import io.setl.verafied.data.JsonConvert;
 
 /**
@@ -63,6 +66,17 @@ public class PublicKeyJwkFactoryTest {
 
     jwk2.setUse("foobar");
     assertFalse(jwk.equals(jwk2));
+  }
+
+  @Test
+  public void test() {
+    SigningAlgorithm algorithm = SigningAlgorithm.PS256;
+    KeyPair keyPair = algorithm.createKeyPair();
+    PublicKeyJwk jwk = PublicKeyJwkFactory.from(keyPair.getPublic());
+    JsonStructure json = JsonConvert.toJson(jwk);
+    System.out.println(Canonical.cast(json).toPrettyString());
+
+    System.out.println(Base64.getMimeEncoder().encodeToString(keyPair.getPrivate().getEncoded()));
   }
 
 }

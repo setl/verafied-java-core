@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 @JsonDeserialize(using = StatusDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CredentialStatus {
+public abstract class CredentialStatus {
 
   private final URI id;
 
@@ -49,7 +49,7 @@ public class CredentialStatus {
    * @param id   credential ID
    * @param type credential status check type
    */
-  public CredentialStatus(
+  protected CredentialStatus(
       @JsonProperty(value = "id", required = true) URI id,
       @JsonProperty(value = "type", required = true) String type
   ) {

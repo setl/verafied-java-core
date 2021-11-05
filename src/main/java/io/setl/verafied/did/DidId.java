@@ -23,6 +23,8 @@ package io.setl.verafied.did;
 import java.net.URI;
 import java.util.Objects;
 
+import io.setl.verafied.did.validate.DidUrlValidator;
+
 /**
  * Process DID URLs. This class assumes the DID URL is well-formed.
  *
@@ -172,6 +174,11 @@ public class DidId {
   @Override
   public int hashCode() {
     return uri.hashCode();
+  }
+
+
+  public boolean isValid() {
+    return DidUrlValidator.isValid(uri);
   }
 
 

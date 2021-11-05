@@ -71,7 +71,7 @@ public class StatusDeserializer extends StdDeserializer<CredentialStatus> {
       String typeName = treeNode.get("type").asText();
       Class<? extends CredentialStatus> typeClass = typeNameMapping.get(typeName);
       if (typeClass == null) {
-        throw InvalidTypeIdException.from(p, "BaseTransaction must specify a valid 'txType' property", ctxt.constructType(CredentialStatus.class), typeName);
+        throw InvalidTypeIdException.from(p, "CredentialStatus must specify a valid 'type' property", ctxt.constructType(CredentialStatus.class), typeName);
       }
       return p.getCodec().treeToValue(treeNode, typeClass);
     }

@@ -1,0 +1,51 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1"
+  ],
+  "assertionMethod": [
+    "did:setl:qDjni0qJX3KHrvgn46JBEVYE#erGcvT"
+  ],
+  "authentication": [
+    "did:setl:qDjni0qJX3KHrvgn46JBEVYE#erGcvT"
+  ],
+  "capabilityDelegation": [],
+  "capabilityInvocation": [],
+  "controller": [
+    "did:setl:qDjni0qJX3KHrvgn46JBEVYE"
+  ],
+  "created": "2020-07-17T12:20:45.800641Z",
+  "id": "did:setl:qDjni0qJX3KHrvgn46JBEVYE",
+  "updated": "2020-07-17T12:20:45.800641Z",
+  "verificationMethod": [
+    {
+      "controller": [
+        "did:setl:qDjni0qJX3KHrvgn46JBEVYE"
+      ],
+      "id": "did:setl:qDjni0qJX3KHrvgn46JBEVYE#erGcvT",
+      "publicKeyJwk": {
+        "crv": "P-256",
+        "kid": "did:setl:qDjni0qJX3KHrvgn46JBEVYE#erGcvT",
+        "kty": "ec",
+        "use": "sig",
+        "x": "LQcwZNTkPeZPluBQxam2gUGTKmB8DnkCX-IKofEmBfo=",
+        "y": "cu0d1L9VXAVY58_f6A4lOEo_v5KBm39BVUjlERlMqKo="
+      },
+      "typ": "JwsVerificationKey2020"
+    },
+    {
+      "controller": [
+        "did:setl:qDjni0qJX3KHrvgn46JBEVYE"
+      ],
+      "id": "did:setl:qDjni0qJX3KHrvgn46JBEVYE#dummy",
+      "publicKeyJwk": {
+        "crv": "P-256",
+        "kid": "did:setl:qDjni0qJX3KHrvgn46JBEVYE#erGcvT",
+        "kty": "ec",
+        "use": "sig",
+        "x": "LQcwZNTkPeZPluBQxam2gUGTKmB8DnkCX-IKofEmBfo=",
+        "y": "cu0d1L9VXAVY58_f6A4lOEo_v5KBm39BVUjlERlMqKo="
+      },
+      "typ": "JwsVerificationKey2020"
+    }
+  ]
+}

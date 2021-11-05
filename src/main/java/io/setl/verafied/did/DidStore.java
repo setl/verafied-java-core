@@ -27,6 +27,15 @@ package io.setl.verafied.did;
  */
 public interface DidStore {
 
+  /**
+   * Fetch a Decentralized Identifier document from storage. If the document cannot be found, return null.
+   *
+   * @param didId the document's ID
+   *
+   * @return the document, or null
+   *
+   * @throws DidStoreException if the storage mechanism fails
+   */
   DecentralizedIdentifier fetch(DidId didId) throws DidStoreException;
 
 }

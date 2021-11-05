@@ -91,6 +91,9 @@ public class DecentralizedIdentifier {
   /** The time at which this identifier was created. */
   private Instant created;
 
+  /** Lazily initialised DID ID. */
+  private DidId didId = null;
+
   /** The identifier of this. */
   private URI id;
 
@@ -241,6 +244,21 @@ public class DecentralizedIdentifier {
 
 
   /**
+   * Get the DID ID.
+   *
+   * @return the DID ID
+   */
+  @JsonIgnore
+  public DidId getDidId() {
+    if (didId == null && id != null) {
+      // Lazy initialisation
+      didId = new DidId(id);
+    }
+    return didId;
+  }
+
+
+  /**
    * The "did:" URN that identifies this DID. This is the "DID Subject".
    *
    * @return the ID
@@ -260,7 +278,8 @@ public class DecentralizedIdentifier {
    */
   @JsonIgnore
   public String getInternalId() {
-    return (id != null) ? new DidId(id).getId() : null;
+    DidId myDidId = getDidId();
+    return myDidId != null ? myDidId.getId() : null;
   }
 
 
@@ -404,6 +423,7 @@ public class DecentralizedIdentifier {
 
   public void setId(URI id) {
     this.id = id;
+    didId = null;
   }
 
 
@@ -422,9 +442,9 @@ public class DecentralizedIdentifier {
   }
 
 
-  public void setVerificationMethod(List<VerificationMethod> verificationMethod) {
-    this.verificationMethod.clear();
-    this.verificationMethod.addAll(verificationMethod);
+  public void setVerificationMethod(List<VerificationMethod> newVerificationMethod) {
+    verificationMethod.clear();
+    newVerificationMethod.forEach(vm -> verificationMethod.add(vm.copy()));
   }
 
 

@@ -1,0 +1,63 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1"
+  ],
+  "assertionMethod": [
+    "did:setl:ygWIJJP5sGErqskusG853bZV#s1FLxF"
+  ],
+  "authentication": [
+    "did:setl:ygWIJJP5sGErqskusG853bZV#s1FLxF"
+  ],
+  "capabilityDelegation": [],
+  "capabilityInvocation": [],
+  "controller": [
+    "did:setl:ygWIJJP5sGErqskusG853bZV"
+  ],
+  "created": "2020-08-10T12:20:45.800641Z",
+  "id": "did:setl:ygWIJJP5sGErqskusG853bZV",
+  "updated": "2020-08-10T12:20:45.800641Z",
+  "verificationMethod": [
+    {
+      "controller": [
+        "did:setl:qDjni0qJX3KHrvgn46JBEVYE"
+      ],
+      "id": "did:setl:ygWIJJP5sGErqskusG853bZV#s1FLxF",
+      "publicKeyJwk": {
+        "e": "AQAB",
+        "kid": null,
+        "kty": "rsa",
+        "n": "gzPW_wcC8kazZERQ2nAHZ-wYSUzV-KaATAP0w6GBV9lQn6cXnDB_bgu1ZA8eeM9nOUmpJ2atiDpbIj12MzfmLVi33b1iwlgXDOzl18kcIh9i-qmCJEsTQGUOKci08CQ8M1rnixIuQ3TX-GPrnCbvm_aEczvLkhJdXwBXazxccXdrDLW3bNwWZqIKTfutLZ9tJvI8FwZKqwuwkfLDwOJ5ELWnZ6LIwxpaoyfoALGk8UauWNh2zIkixuCZlGwGbS2zh7mvUY8UpqHAVQZG28x5MrEkXSNw1fNGlUbhrDyJMwmLoyJRD2wKQg0vssDFqkbdAD4pNrOm9a_vkR-9LaOy3sfKbi_iDwytt6RLL6A4y7J-f4bf0ZpfFZ7mM9mWw-GAMQ6sA4cMU_QSzgRW8cA9VS2ASbk9znfju3ODoVB8oDmdTMRVMgliU_ZWxzU_LPJ6NqAqLpr-E7K5QXZfajXZRfgRfB6s7fIeSIpuwWlKFSPOBIUcwnRH_nXiQTeTMC43",
+        "use": "sig"
+      },
+      "typ": "JwsVerificationKey2020"
+    },
+    {
+      "controller": [
+        "did:setl:qDjni0qJX3KHrvgn46JBEVYE"
+      ],
+      "id": "did:setl:ygWIJJP5sGErqskusG853bZV#dummy1",
+      "publicKeyJwk": {
+        "e": "AQAB",
+        "kid": null,
+        "kty": "rsa",
+        "n": "gzPW_wcC8kazZERQ2nAHZ-wYSUzV-KaATAP0w6GBV9lQn6cXnDB_bgu1ZA8eeM9nOUmpJ2atiDpbIj12MzfmLVi33b1iwlgXDOzl18kcIh9i-qmCJEsTQGUOKci08CQ8M1rnixIuQ3TX-GPrnCbvm_aEczvLkhJdXwBXazxccXdrDLW3bNwWZqIKTfutLZ9tJvI8FwZKqwuwkfLDwOJ5ELWnZ6LIwxpaoyfoALGk8UauWNh2zIkixuCZlGwGbS2zh7mvUY8UpqHAVQZG28x5MrEkXSNw1fNGlUbhrDyJMwmLoyJRD2wKQg0vssDFqkbdAD4pNrOm9a_vkR-9LaOy3sfKbi_iDwytt6RLL6A4y7J-f4bf0ZpfFZ7mM9mWw-GAMQ6sA4cMU_QSzgRW8cA9VS2ASbk9znfju3ODoVB8oDmdTMRVMgliU_ZWxzU_LPJ6NqAqLpr-E7K5QXZfajXZRfgRfB6s7fIeSIpuwWlKFSPOBIUcwnRH_nXiQTeTMC43",
+        "use": "sig"
+      },
+      "typ": "JwsVerificationKey2020"
+    },
+    {
+      "controller": [
+        "did:setl:qDjni0qJX3KHrvgn46JBEVYE"
+      ],
+      "id": "did:setl:ygWIJJP5sGErqskusG853bZV#dummy2",
+      "publicKeyJwk": {
+        "e": "AQAB",
+        "kid": null,
+        "kty": "rsa",
+        "n": "gzPW_wcC8kazZERQ2nAHZ-wYSUzV-KaATAP0w6GBV9lQn6cXnDB_bgu1ZA8eeM9nOUmpJ2atiDpbIj12MzfmLVi33b1iwlgXDOzl18kcIh9i-qmCJEsTQGUOKci08CQ8M1rnixIuQ3TX-GPrnCbvm_aEczvLkhJdXwBXazxccXdrDLW3bNwWZqIKTfutLZ9tJvI8FwZKqwuwkfLDwOJ5ELWnZ6LIwxpaoyfoALGk8UauWNh2zIkixuCZlGwGbS2zh7mvUY8UpqHAVQZG28x5MrEkXSNw1fNGlUbhrDyJMwmLoyJRD2wKQg0vssDFqkbdAD4pNrOm9a_vkR-9LaOy3sfKbi_iDwytt6RLL6A4y7J-f4bf0ZpfFZ7mM9mWw-GAMQ6sA4cMU_QSzgRW8cA9VS2ASbk9znfju3ODoVB8oDmdTMRVMgliU_ZWxzU_LPJ6NqAqLpr-E7K5QXZfajXZRfgRfB6s7fIeSIpuwWlKFSPOBIUcwnRH_nXiQTeTMC43",
+        "use": "sig"
+      },
+      "typ": "JwsVerificationKey2020"
+    }
+  ]
+}

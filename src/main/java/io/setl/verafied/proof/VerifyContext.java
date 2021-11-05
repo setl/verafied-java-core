@@ -37,6 +37,8 @@ import io.setl.verafied.did.DidId;
 import io.setl.verafied.did.DidStore;
 import io.setl.verafied.did.DidStoreException;
 import io.setl.verafied.did.VerificationMethod;
+import io.setl.verafied.did.validate.DidUrl.Has;
+import io.setl.verafied.did.validate.DidUrlValidator;
 
 /**
  * Common information for document verification.
@@ -72,8 +74,8 @@ public class VerifyContext extends SharedContext {
     if (method == null) {
       throw new UnacceptableDocumentException("proof_no_verification_method", "Proof does not contain a 'verificationMethod'");
     }
-    if (!"did".equals(method.getScheme())) {
-      throw new UnacceptableDocumentException("proof_verification_method_not_did", "Specified 'verificationMethod' is not a 'did:' URI",
+    if (!DidUrlValidator.isValid(method, "", Has.EITHER, Has.EITHER, Has.YES)) {
+      throw new UnacceptableDocumentException("proof_verification_method_not_did", "Specified 'verificationMethod' is not a valid 'did:' URI",
           Map.of("verificationMethod", method)
       );
     }
@@ -83,7 +85,10 @@ public class VerifyContext extends SharedContext {
     setDidWithKey(didId);
 
     // fetch the DID from the store
-    DecentralizedIdentifier did = getDidStore().fetch(didId);
+    DecentralizedIdentifier did = getDidStore().fetch(didId.withoutFragment());
+    if (did == null) {
+      throw new UnacceptableDocumentException("proof_did_unknown", "DID associated with the document is not available", Map.of("did", didId));
+    }
 
     // Look for the key in the DID
     List<VerificationMethod> methods = did.getVerificationMethod();
@@ -185,7 +190,8 @@ public class VerifyContext extends SharedContext {
         throw new UnacceptableDocumentException("proof_incorrect_signature", "Incorrect signature");
       }
     } catch (InvalidKeyException e) {
-      throw new UnacceptableDocumentException("proof_wrong_signature_method",
+      throw new UnacceptableDocumentException(
+          "proof_wrong_signature_method",
           "Declared JWS Signature algorithm does not match the declared verification method",
           Map.of("errorMessage", e.toString(), "error", e)
       );

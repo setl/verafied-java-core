@@ -1,0 +1,48 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "credentialStatus": {
+    "id": "http://verafied.com/statusCheck/uuid:af08752f-831a-4776-8317-a1443a2aba6d",
+    "recheckAfter": "PT24H",
+    "type": "VerafiedHttpCheck"
+  },
+  "credentialSubject": {
+    "@context": "http://schema.org/",
+    "address": {
+      "addressCountry": "USA",
+      "addressLocality": "Rockbridge",
+      "addressRegion": "California",
+      "type": "PostalAddress"
+    },
+    "alternateName": "Arnie",
+    "familyName": "Cunningham",
+    "givenName": "Arnold",
+    "id": "did:setl:xyz123",
+    "owns": {
+      "callSign": "Christine",
+      "color": "Red and white",
+      "dateVehicleFirstRegistered": "1958-02-14",
+      "manufacturer": "Plymouth",
+      "model": "Fury",
+      "name": "CQB 241",
+      "type": "Car",
+      "vehicleIdentificationNumber": "D3MoNC4r"
+    },
+    "type": "Person"
+  },
+  "expirationDate": "2345-07-27T09:54:21.764461Z",
+  "id": "uuid:8a8eb2dd-a9b5-4623-b7d1-e1ac206db070",
+  "issuanceDate": "2021-07-27T09:54:21.762950Z",
+  "issuer": "did:verafied:qDjni0qJX3KHrvgn46JBEVYE",
+  "proof": {
+    "created": "2021-11-04T16:11:52Z",
+    "jws": "eyJhbGciOiJFUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..MEUCIFVxStB7PPIH_kTNQDQX3Yrb1M5-GgjIWJYXf6oJklufAiEA0RE7DsoQcMrgdXWHV6gpKkHixxQ4a2x0upQVR7BPpK8=",
+    "salt": ">l<(CfQQm}<LrC-sA{&[%+OwP9XhEMmJO[Lkf $c",
+    "type": "CanonicalJsonWithJws",
+    "verificationMethod": "did:setl:qDjni0qJX3KHrvgn46JBEVYE#erGcvT"
+  },
+  "type": [
+    "VerifiableCredential"
+  ]
+}

@@ -67,6 +67,9 @@ public class CanonicalJsonWithJws implements Prover {
     if (proof == null) {
       proof = new Proof();
     }
+    if (keyPair.getId() != null) {
+      context.setDidWithKey(keyPair.getId());
+    }
 
     // Set the standard proof fields
     proof.remove("jws");
@@ -176,7 +179,7 @@ public class CanonicalJsonWithJws implements Prover {
     }
     if (inputAlg == SigningAlgorithm.NONE) {
       // "NONE" is not a valid value
-      throw new UnacceptableDocumentException("proof_jws_header_alg_is_none", "JWS header does not specify NONE for 'alg'",
+      throw new UnacceptableDocumentException("proof_jws_header_alg_is_none", "JWS header specifies NONE for 'alg'",
           Map.of("alg", headerAlg)
       );
     }

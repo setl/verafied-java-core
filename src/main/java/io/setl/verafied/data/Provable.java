@@ -43,6 +43,19 @@ public interface Provable {
 
 
   /**
+   * A utility method to call within setters when this should be immutable if a proof is attached. If a proof is non-null, then this method will throw an
+   * <code>IllegalStateException</code>
+   *
+   * @throws IllegalStateException if this has a non-null proof
+   */
+  default void checkNotProven() {
+    if (getProof() != null) {
+      throw new IllegalStateException("Cannot change data when a proof is attached");
+    }
+  }
+
+
+  /**
    * Get the "proof" element of this, if it has been set.
    *
    * @return the proof, or null
@@ -54,7 +67,7 @@ public interface Provable {
 
 
   /**
-   * Set the "proof" element of this which contains the signature.
+   * Set the "proof" element of this which contains the signature. It is recommended that an object with a non-null proof be immutable.
    *
    * @param proof the proof element
    */

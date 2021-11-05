@@ -1,0 +1,67 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "holder": "did:setl:ygWIJJP5sGErqskusG853bZV#s1FLxF",
+  "id": "uuid:82e726c8-6583-4d3e-9056-6cb56f59a3f6",
+  "proof": {
+    "created": "2021-11-04T16:35:19Z",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Ac7z71gGqL2NWCm-OMCgrmPudu0OAY8q7hcOOd_k6B5DaEWB7yX5SzGurqCk6tPZKCbvfAmU8s4ZHFIIZcTytDefiM4UgRvNB_LANtRch8c2KJxWkA2lghmXlrm056glMAzqxKbmLWtbewN-ZFYV1RdrnxEUZOgliyboCFOAPz3NWhQU6F_G2O0mx9tLjnhHBuZe1QFXdEi_U-_Bg9ILFEiMLrb0cQZdXtD-CSaZUeQ3eQlyVWoHvWDNwmWLHIiGKYE2CVBrrLnmDUJBTMrF-wy5EnHOthXujQMS_g3eI7jv4-OmVq2uiugqCrQbdBXtnxeoW9i2clG5SE9K2Uulef4qgN9pKMPpdwnYcDuOhaS8swx3MPefOoKz84IgyeUf1nXCSyALkj0hJiDSW6LGICQrgWfkT6n_lDHqupzjj6IvVmrt-38Pop9q7SiCFXKALk0PC_qpV51zfi85_bacSDhlLyL68rO-1VPwk3H-ez-Sg8Mu8g8NAPVbtvMEHLct",
+    "salt": "S[OHVs(+~&fsM{h'Bc*Fh0,Iqc*)P&t/z~4G}.<9",
+    "type": "CanonicalJsonWithJws",
+    "verificationMethod": "did:setl:ygWIJJP5sGErqskusG853bZV#s1FLxF"
+  },
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1"
+      ],
+      "credentialStatus": {
+        "id": "http://verafied.com/statusCheck/uuid:af08752f-831a-4776-8317-a1443a2aba6d",
+        "recheckAfter": "PT24H",
+        "type": "VerafiedHttpCheck"
+      },
+      "credentialSubject": {
+        "@context": "http://schema.org/",
+        "address": {
+          "addressCountry": "USA",
+          "addressLocality": "Rockbridge",
+          "addressRegion": "California",
+          "type": "PostalAddress"
+        },
+        "alternateName": "Arnie",
+        "familyName": "Cunningham",
+        "givenName": "Arnold",
+        "id": "did:setl:xyz123",
+        "owns": {
+          "callSign": "Christine",
+          "color": "Red and white",
+          "dateVehicleFirstRegistered": "1958-02-14",
+          "manufacturer": "Plymouth",
+          "model": "Fury",
+          "name": "CQB 241",
+          "type": "Car",
+          "vehicleIdentificationNumber": "D3MoNC4r"
+        },
+        "type": "Person"
+      },
+      "expirationDate": "2345-07-27T09:54:21.764461Z",
+      "id": "uuid:8a8eb2dd-a9b5-4623-b7d1-e1ac206db070",
+      "issuanceDate": "2021-07-27T09:54:21.762950Z",
+      "issuer": "did:verafied:qDjni0qJX3KHrvgn46JBEVYE",
+      "proof": {
+        "created": "2020-07-27T09:54:21Z",
+        "jws": "eyJhbGciOiJFZDQ0OCIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..CaC7ABwe38RLC2MMCztpNKWL9EQ5BB0pOiA6JMNzb1ezO8xpVl29MmsocljdsHlfF8ImPuLF94qA5mx43zKZQ0T2YtX0HET68OhIysRyxCZlfdxnvZ7kb936kdEjRRv2yAJNOgczyVEBoH9eR65rBQcA",
+        "salt": "1w2YC /-?CTg~SK+cYVy& W(bOh?Yy_wn[Ou&_L)",
+        "type": "CanonicalJsonWithJws",
+        "verificationMethod": "did:verafied:qDjni0qJX3KHrvgn46JBEVYE#erGcvT"
+      },
+      "type": [
+        "VerifiableCredential"
+      ]
+    }
+  ]
+}

@@ -20,9 +20,13 @@
 
 package io.setl.verafied.data.presentation;
 
+import java.security.GeneralSecurityException;
+
 import io.setl.verafied.CredentialConstants;
 import io.setl.verafied.UnacceptableDocumentException;
+import io.setl.verafied.data.TypedKeyPair;
 import io.setl.verafied.did.DidStoreException;
+import io.setl.verafied.proof.ProofContext;
 import io.setl.verafied.proof.ProvableApi;
 import io.setl.verafied.proof.VerifyContext;
 
@@ -34,6 +38,26 @@ import io.setl.verafied.proof.VerifyContext;
 public class PresentationApi {
 
   private static final String PRESENTATION = "Presentation";
+
+
+  /**
+   * Attach a proof to a presentation.
+   *
+   * @param proofContext the proof context
+   * @param presentation the presentation to attach a proof to
+   * @param keyPair      the key pair to sign the credential with
+   *
+   * @throws GeneralSecurityException if a cryptographic failure occurs
+   */
+  public static void prove(
+      ProofContext proofContext,
+      Presentation presentation,
+      TypedKeyPair keyPair
+  ) throws GeneralSecurityException, UnacceptableDocumentException {
+    verifyType(presentation);
+
+    proofContext.getProver().attachProof(proofContext, presentation, keyPair);
+  }
 
 
   /**
@@ -56,8 +80,6 @@ public class PresentationApi {
    *
    * @param presentation  the presentation
    * @param verifyContext the context for the signature verification
-   *
-   * @return result of the verification
    */
   private static void verifyProof(Presentation presentation, VerifyContext verifyContext) throws DidStoreException, UnacceptableDocumentException {
     ProvableApi.verifyProof(presentation.getProof(), presentation, PRESENTATION, presentation.getId(), verifyContext);

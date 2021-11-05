@@ -20,15 +20,11 @@
 
 package io.setl.verafied.proof;
 
-import static io.setl.verafied.CredentialConstants.logSafe;
-
 import java.net.URI;
-import java.util.Base64;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.setl.verafied.did.DidId;
+import io.setl.verafied.did.validate.DidUrl.Has;
+import io.setl.verafied.did.validate.DidUrlValidator;
 
 /**
  * Context used by both the verifier and the prover.
@@ -36,8 +32,6 @@ import io.setl.verafied.did.DidId;
  * @author Simon Greatrix on 22/10/2020.
  */
 public class SharedContext {
-
-  private static final Logger logger = LoggerFactory.getLogger(SharedContext.class);
 
   /** The bytes that were to be signed. */
   private byte[] bytesToSign;
@@ -58,7 +52,7 @@ public class SharedContext {
    * @return the bytes
    *
    * @throws IllegalStateException if "bytesToSign" has not yet been set
-   * @see #setBytesToSign(byte[]) 
+   * @see #setBytesToSign(byte[])
    */
   public byte[] getBytesToSign() {
     if (bytesToSign == null) {
@@ -67,12 +61,13 @@ public class SharedContext {
     return bytesToSign.clone();
   }
 
+
   /**
    * Get the DID ID.
    *
    * @return the ID
    *
-   * @throws IllegalStateException if "didId" has not yet been set 
+   * @throws IllegalStateException if "didId" has not yet been set
    * @see #setDidWithKey(DidId)
    */
   public URI getDidId() {
@@ -82,12 +77,13 @@ public class SharedContext {
     return didId;
   }
 
+
   /**
    * Get the DID ID and selected verification method.
    *
    * @return the ID
    *
-   * @throws IllegalStateException if "didWithKey" has not yet been set 
+   * @throws IllegalStateException if "didWithKey" has not yet been set
    * @see #setDidWithKey(DidId)
    */
   public DidId getDidWithKey() {
@@ -103,8 +99,8 @@ public class SharedContext {
    *
    * @return the ID
    *
-   * @throws IllegalStateException if "keyId" has not yet been set 
-   * @see #setDidWithKey(DidId) 
+   * @throws IllegalStateException if "keyId" has not yet been set
+   * @see #setDidWithKey(DidId)
    */
   public String getKeyId() {
     if (keyId == null) {
@@ -124,9 +120,6 @@ public class SharedContext {
       throw new IllegalArgumentException("'bytesToSign' must not be null");
     }
     this.bytesToSign = bytesToSign.clone();
-    if (logger.isDebugEnabled()) {
-      logger.debug("Bytes to sign={}", Base64.getUrlEncoder().encodeToString(bytesToSign));
-    }
   }
 
 
@@ -139,12 +132,12 @@ public class SharedContext {
     if (id == null) {
       throw new IllegalArgumentException("DID ID must not be null");
     }
+    if (!DidUrlValidator.isValid(id.getUri(), "", Has.EITHER, Has.EITHER, Has.YES)) {
+      throw new IllegalArgumentException("DID ID must be valid: " + id.getUri());
+    }
     didWithKey = id;
     didId = id.withoutFragment().getUri();
     keyId = id.getFragment();
-    if (keyId == null) {
-      throw new IllegalArgumentException("DID ID must specify a verification method. Got: " + logSafe(id.toString()));
-    }
   }
 
 }

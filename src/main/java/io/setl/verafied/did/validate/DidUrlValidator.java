@@ -145,7 +145,7 @@ public class DidUrlValidator implements ConstraintValidator<DidUrl, URI> {
         return false;
       }
     } else {
-      if (hasPath == Has.NO) {
+      if (hasPath == Has.YES) {
         addViolation(context, "{io.setl.verafied.did.validate.DidUrl.missingPath}");
         return false;
       }
