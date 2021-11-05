@@ -1,0 +1,132 @@
+ERROR CODES
+===========
+
+
+
+document_has_no_types           Document is missing a JSON-LD type specification
+        documentType            the document's type
+        id                      the document's ID
+
+document_has_no_types_2         Document is missing a JSON-LD type specification
+        documentType            the document's type
+        id                      the document's ID
+        requiredType            the required document type
+
+document_bad_type_specifier     The JSON-LD type specifier is neither a string nor an array
+        documentType            the document's type
+        jsonType                the value's JSON type
+        id                      the document's ID
+
+document_contains_null_type     The JSON-LD type specifier is an array containing a null
+        documentType            the document's type
+        id                      the document's ID
+
+document_bad_contained_type_specifier       The JSON-LD type specifier is an array containing something other than a string
+        documentType            the document's type
+        jsonType                the invalid value's JSON type
+        id                      the document's ID
+
+document_context_missing        The document does not contain an '@context' value
+        documentType            the document's type
+        id                      the document's ID
+
+document_context_bad_type       The JSON-LD type specifier is neither a string nor an array
+        documentType            the document's type
+        jsonType                the value's JSON type
+        id                      the document's ID
+
+document_context_w3c_must_be_first          The '@context' value does not put the required W3C context first
+        documentType            the document's type
+        id                      the document's ID
+        context                 the '@context' value
+
+document_no_proof               the document does not contain a 'proof' value.
+        documentType            the document's type
+        id                      the document's ID
+
+document_proof_error            the document's proof could not be verified because it triggered a GeneralSecurityException
+        documentType            the document's type
+        id                      the document's ID
+        errorMessage            the exception's message
+        error                   the exception
+
+document_type_missing           the document was required to specify a given type, but did not.
+        documentType            the document's type
+        id                      the document's ID
+        requiredType            the required document type
+
+proof_no_verification_method        Proof does not contain a 'verificationMethod'
+        <no parameters>
+
+proof_verification_method_not_did           Specified 'verificationMethod' is not a valid 'did:' URI with a fragment
+        verificationMethod      the provided verification method
+
+proof_did_unknown               DID associated with the document is not available
+        did                     The did ID that could not be found
+
+proof_verification_method_not_matched       No such verification method in specified DID
+        verificationMethod      the provided verification method
+
+proof_incorrect_signature       Incorrect signature
+        <no parameters>
+
+proof_wrong_signature_method    Declared JWS Signature algorithm does not match the declared verification method and triggered a Java InvalidKeyException
+        errorMessage            the exception's message
+        error                   the exception
+        
+proof_invalid_signature         An invalid signature which triggered a Java SignatureException
+        errorMessage            the exception's message
+        error                   the exception
+        
+proof_incorrect_type            The proof type does not match the that prover was invoked to verify it
+        expected                the expected proof type (e.g. 'CanonicalJsonWithJws')
+        actual                  the actual proof type
+
+proof_missing_jws               Proof does not contain a "jws" value
+        <no parameters>
+
+proof_jws_not_detached          JWS value is not of the form <header>..<signature>
+        jws                     the JWS value provided
+
+proof_jws_header_bad_base64     JWS header contains an invalid Base64-URL character
+        header                  The JWS header value
+
+proof_jws_header_bad_json       JWS header contains invalid JSON
+        badJson                 The header text that could not be parsed as JSON
+        errorMessage            The error message from the JSON parser
+        error                   The error from the JSON parser
+
+proof_jws_header_missing_b64    JWS header does not specify b64=false, which is required for detached JWS
+        parsedHeader            The header as JsonObject
+
+proof_jws_header_missing_alg    JWS header does not specify an 'alg'
+        parsedHeader            The header as JsonObject
+    
+proof_jws_header_invalid_alg    JWS header does not specify a valid 'alg'
+        alg                     The 'alg' value provided in the header
+
+proof_jws_header_alg_is_none    JWS header specifies NONE for 'alg'
+        alg                     The 'alg' value provided in the header
+
+proof_jws_signature_bad_base64          JWS Signature contains an invalid Base64-URL character
+        signature               The JWS signature value
+
+credential_missing_id           Credential is required to have an ID
+        <no parameters>
+
+credential_expired              Credential has expired
+        id                      the credential ID
+        expires                 the credential's expiration date
+        now                     the time at which the credential was checked for expiry
+
+credential_not_issued_yet       Credential's issuance date is in the future
+        id                      the credential ID
+        issuedAt                the credential's issuance date
+        now                     the time at which the credential was checked
+
+credential_is_revoked           Credential has been revoked
+        id                      the credential's ID
+        issuer                  the credential's issuer
+        statusType              the type of the revocation test
+
+

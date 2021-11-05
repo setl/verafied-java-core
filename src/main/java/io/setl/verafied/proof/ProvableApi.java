@@ -64,7 +64,7 @@ public class ProvableApi {
   public static Set<String> getTypes(JsonValue types, String type, Object id) throws UnacceptableDocumentException {
     if (types == null) {
       String message = String.format("%s %s NOT verified as it does not specify any types", type, logSafe(String.valueOf(id)));
-      throw new UnacceptableDocumentException("document_has_no_types", message, Map.of("id", id));
+      throw new UnacceptableDocumentException("document_has_no_types", message, Map.of(DOCUMENT_TYPE, type, "id", id));
     }
 
     Set<String> typeSet;
@@ -187,7 +187,7 @@ public class ProvableApi {
   public static void verifyType(Set<String> types, String type, Object id, String match) throws UnacceptableDocumentException {
     if (types == null) {
       String message = String.format("%s %s NOT verified as it does not specify any types", type, logSafe(String.valueOf(id)));
-      throw new UnacceptableDocumentException("document_type_is_null", message,
+      throw new UnacceptableDocumentException("document_has_no_types_2", message,
           Map.of(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
       );
     }

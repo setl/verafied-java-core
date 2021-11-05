@@ -113,7 +113,7 @@ public class CredentialApi {
           logSafe(credential.getId().toString()), credential.getIssuanceDate(), atTime
       );
       throw new UnacceptableDocumentException("credential_not_issued_yet", message,
-          Map.of("id", credential.getId(), "expires", credential.getIssuanceDate(), "now", atTime)
+          Map.of("id", credential.getId(), "issuedAt", credential.getIssuanceDate(), "now", atTime)
       );
     }
   }

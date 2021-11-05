@@ -114,7 +114,8 @@ public class CanonicalJsonWithJws implements Prover {
     if (!"CanonicalJsonWithJws".equals(proof.getType())) {
       throw new UnacceptableDocumentException(
           "proof_incorrect_type",
-          "Proof type is not \"CanonicalJsonWithJws\""
+          "Proof type is not \"CanonicalJsonWithJws\"",
+          Map.of("expected", "CanonicalJsonWithJws", "actual", proof.getType())
       );
     }
 
@@ -127,9 +128,8 @@ public class CanonicalJsonWithJws implements Prover {
     // Lets check the JWS value .. it must have a detached payload so ".." in the middle
     int dotDotIndex = jws.indexOf("..");
     if (dotDotIndex == -1) {
-      throw new UnacceptableDocumentException(
-          "proof_jws_not_detached",
-          "JWS value is not <header>..<signature>"
+      throw new UnacceptableDocumentException("proof_jws_not_detached", "JWS value is not <header>..<signature>",
+          Map.of("jws", jws)
       );
     }
 
@@ -148,24 +148,28 @@ public class CanonicalJsonWithJws implements Prover {
     // The header should be a valid Json Object
     JsonObject jsonObject;
     try (
-        JsonReader reader = Json.createReader(new InputStreamReader(new ByteArrayInputStream(b64), StandardCharsets.UTF_8))
+        JsonReader reader = Json.createReader(new InputStreamReader(new ByteArrayInputStream(b64), UTF_8))
     ) {
       jsonObject = reader.readObject();
     } catch (JsonException e) {
       throw new UnacceptableDocumentException("proof_jws_header_bad_json", "JWS header contains invalid JSON",
-          Map.of("badJson", new String(b64, UTF_8))
+          Map.of("badJson", new String(b64, UTF_8), "errorMessage", e.toString(), "error", e)
       );
     }
 
     // For a detached payload, the header must specify "b64:false"
     if (!JsonValue.FALSE.equals(jsonObject.get("b64"))) {
-      throw new UnacceptableDocumentException("proof_jws_header_missing_b64", "JWS header does not specify b64=false");
+      throw new UnacceptableDocumentException("proof_jws_header_missing_b64", "JWS header does not specify b64=false",
+          Map.of("parsedHeader", jsonObject)
+      );
     }
 
     // The "alg" is required in the header.
     String headerAlg = jsonObject.getString("alg", null);
     if (headerAlg == null || headerAlg.isEmpty()) {
-      throw new UnacceptableDocumentException("proof_jws_header_missing_alg", "JWS header does not specify an 'alg'");
+      throw new UnacceptableDocumentException("proof_jws_header_missing_alg", "JWS header does not specify an 'alg'",
+          Map.of("parsedHeader", jsonObject)
+      );
     }
 
     // The "alg" must be a known algorithm.
