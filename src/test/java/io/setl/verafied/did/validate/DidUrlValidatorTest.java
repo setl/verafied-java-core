@@ -84,6 +84,7 @@ public class DidUrlValidatorTest {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public Class<? extends Payload>[] payload() {
       return new Class[0];
     }

@@ -20,6 +20,7 @@
 
 package io.setl.verafied.proof;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import io.setl.verafied.did.DidId;
@@ -33,6 +34,8 @@ import io.setl.verafied.did.validate.DidUrlValidator;
  */
 public class SharedContext {
 
+  private Object auxiliary;
+
   /** The bytes that were to be signed. */
   private byte[] bytesToSign;
 
@@ -44,6 +47,31 @@ public class SharedContext {
 
   /** The key ID as extracted from didWithKey. */
   private String keyId;
+
+
+  /**
+   * Get auxiliary data on the context. If there is no auxiliary data yet, a no-argument constructor will be called on the class. If that doesn't work for you,
+   * you will have to explicitly set the auxiliary data before it is required.
+   *
+   * @param type the auxiliary type
+   * @param <T>  the auxiliary type
+   *
+   * @return the auxiliary data
+   */
+  @SuppressWarnings("unchecked")
+  public <T> T getAuxiliary(Class<T> type) {
+    if (auxiliary != null) {
+      return type.cast(auxiliary);
+    }
+    T aux = null;
+    try {
+      aux = type.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      throw new InternalError("Invalid auxiliary class: " + type.getName(), e);
+    }
+    auxiliary = aux;
+    return aux;
+  }
 
 
   /**
@@ -107,6 +135,16 @@ public class SharedContext {
       throw new IllegalStateException("'keyId' is not set yet, so the verification method is also unavailable.");
     }
     return keyId;
+  }
+
+
+  /**
+   * Set the auxiliary data.
+   *
+   * @param auxiliary the new data
+   */
+  public void setAuxiliary(Object auxiliary) {
+    this.auxiliary = auxiliary;
   }
 
 

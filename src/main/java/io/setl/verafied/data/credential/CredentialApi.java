@@ -121,8 +121,6 @@ public class CredentialApi {
 
   /**
    * Verify that the cryptographic proof for this is correct.
-   *
-   * @return true if OK
    */
   private static void verifyProof(Credential credential, VerifyContext verifyContext) throws DidStoreException, UnacceptableDocumentException {
     ProvableApi.verifyProof(credential.getProof(), credential, CREDENTIAL, credential.getId(), verifyContext);
@@ -133,8 +131,6 @@ public class CredentialApi {
    * Verify that this credential has not been revoked.
    *
    * @param revocationStore the revocation store.
-   *
-   * @return true if OK
    */
   private static void verifyStatus(Credential credential, RevocationChecker revocationStore) throws UnacceptableDocumentException {
     CredentialStatus status = credential.getCredentialStatus();
@@ -152,8 +148,6 @@ public class CredentialApi {
 
   /**
    * Verify that this credential correctly declares its type as "VerifiableCredential" and has the W3C context.
-   *
-   * @return true if OK
    */
   private static void verifyType(Credential credential) throws UnacceptableDocumentException {
     ProvableApi.verifyContext(credential.getContext(), CREDENTIAL, credential.getId());

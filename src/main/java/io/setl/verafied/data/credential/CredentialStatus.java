@@ -21,10 +21,12 @@
 package io.setl.verafied.data.credential;
 
 import java.net.URI;
-
+import java.net.URISyntaxException;
+import java.util.UUID;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -38,22 +40,35 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class CredentialStatus {
 
+  /**
+   * A URI that will be assigned to an instance if no ID is specified. This uses the "example" schema, which is guaranteed not to be used by a proper ID,
+   * according to RFC-7595.
+   */
+  public static final URI UNSET_URI = URI.create("example:unset.status.id");
+
   private final URI id;
 
   private final String type;
 
 
   /**
-   * New instance.
+   * New instance. A credential status must have an ID, but it may be desirable to only set the type and allow a processor to derive an ID.
    *
-   * @param id   credential ID
+   * @param id   credential status ID. If null, a unique one will be generated using the UNSET_URI as a template.
    * @param type credential status check type
    */
   protected CredentialStatus(
-      @JsonProperty(value = "id", required = true) URI id,
+      @JsonProperty(value = "id") URI id,
       @JsonProperty(value = "type", required = true) String type
   ) {
-    this.id = id;
+    URI myId;
+    try {
+      myId = id != null ? id : new URI(UNSET_URI.getScheme(), UNSET_URI.getSchemeSpecificPart(), UUID.randomUUID().toString());
+    } catch (URISyntaxException e) {
+      // Not reachable
+      myId = UNSET_URI;
+    }
+    this.id = myId;
     this.type = type;
   }
 
@@ -67,6 +82,15 @@ public abstract class CredentialStatus {
   @NotEmpty
   public String getType() {
     return type;
+  }
+
+
+  /**
+   * Test if this status was created with an unset ID. This tests if the ID's scheme matches that used by the UNSET_URI value.
+   */
+  @JsonIgnore
+  public boolean isUnsetId() {
+    return getId().getScheme().equals(UNSET_URI.getScheme());
   }
 
 }
