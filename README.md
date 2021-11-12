@@ -14,9 +14,15 @@ For example implementation see the following code
 
 Create Credential
 
+https://github.com/setl/verafied-java-core/blob/master/src/test/java/io/setl/verafied/data/credential/CredentialApiTest.java
+
 Present Credential
 
+https://github.com/setl/verafied-java-core/blob/master/src/test/java/io/setl/verafied/data/presentation/PresentationApiTest.java
+
 Verifiy Credential
+
+https://github.com/setl/verafied-java-core/blob/master/src/test/java/io/setl/verafied/data/credential/CredentialApiTest.java
 
 
 # Exceptions to currently published WC3 Verification Standards # 
@@ -34,4 +40,10 @@ This means it is possible to change any text value in the JSON, rename any field
 by suitably amending the JSON-LD context, which is not protected by the document signature.
 
 By contrast, the "Canonical JSON with JWS" protects all parts of the JSON-LD and the RDF representation and operates in linear time.  The Cannonical JSON with JWS code is opensource.
+
+# Commercial Implementation #  
+
+Verafide provides a turnkey commercial implementation including persistence and credential design at https://www.verafide.io  
+
+
 
