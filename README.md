@@ -3,6 +3,7 @@
 This library provides the functionality for
 
 Creating verifiable and signing verifiable credentials
+
 Presenting verifiable credentials
 Verifying verifiable credentials
 
