@@ -10,7 +10,7 @@ The library does not persist the credentials in any format
 
 # Using the Library #
 
-For instruction on how to implement see the following components 
+For example implementation see the following code 
 
 Create Credential
 
