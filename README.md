@@ -1,4 +1,4 @@
-# Java core for Verifiable Credentials
+# Verafide Verafiable Credentials Java Core #
 
 This library provides the functionality for
 
