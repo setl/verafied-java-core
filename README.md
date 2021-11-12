@@ -1,6 +1,12 @@
 # Java core for Verifiable Credentials
 
-This library provides the functionality for signing and verifying Verifiable Presentations.
+This library provides the functionality for
+
+Creating verifiable and signing verifiable credentials
+Presenting verifiable credentials
+Verifying verifiable credentials
+
+The 
 
 ## Supported verification methods
 
