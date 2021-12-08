@@ -21,6 +21,7 @@
 package io.setl.verafied.data.credential;
 
 import static io.setl.verafied.CredentialConstants.logSafe;
+import static io.setl.verafied.UnacceptableDocumentException.mapOf;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -103,7 +104,7 @@ public class CredentialApi {
           logSafe(credential.getId().toString()), credential.getExpirationDate(), atTime
       );
       throw new UnacceptableDocumentException("credential_expired", message,
-          Map.of("id", credential.getId(), "expires", credential.getExpirationDate(), "now", atTime)
+          mapOf("id", credential.getId(), "expires", credential.getExpirationDate(), "now", atTime)
       );
     }
 
@@ -113,7 +114,7 @@ public class CredentialApi {
           logSafe(credential.getId().toString()), credential.getIssuanceDate(), atTime
       );
       throw new UnacceptableDocumentException("credential_not_issued_yet", message,
-          Map.of("id", credential.getId(), "issuedAt", credential.getIssuanceDate(), "now", atTime)
+          mapOf("id", credential.getId(), "issuedAt", credential.getIssuanceDate(), "now", atTime)
       );
     }
   }
@@ -140,7 +141,7 @@ public class CredentialApi {
       // has been revoked
       String message = String.format("Credential %s NOT verified as it has been revoked", logSafe(credential.getId().toString()));
       throw new UnacceptableDocumentException("credential_is_revoked", message,
-          Map.of("id", credential.getId(), "issuer", credential.getIssuer(), "statusType", status.getType())
+          mapOf("id", credential.getId(), "issuer", credential.getIssuer(), "statusType", status.getType())
       );
     }
   }

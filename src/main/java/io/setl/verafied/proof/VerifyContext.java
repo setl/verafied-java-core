@@ -20,6 +20,8 @@
 
 package io.setl.verafied.proof;
 
+import static io.setl.verafied.UnacceptableDocumentException.mapOf;
+
 import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.Signature;
@@ -76,7 +78,7 @@ public class VerifyContext extends SharedContext {
     }
     if (!DidUrlValidator.isValid(method, "", Has.EITHER, Has.EITHER, Has.YES)) {
       throw new UnacceptableDocumentException("proof_verification_method_not_did", "Specified 'verificationMethod' is not a valid 'did:' URI",
-          Map.of("verificationMethod", method)
+          mapOf("verificationMethod", method)
       );
     }
 
@@ -87,7 +89,7 @@ public class VerifyContext extends SharedContext {
     // fetch the DID from the store
     DecentralizedIdentifier did = getDidStore().fetch(didId.withoutFragment());
     if (did == null) {
-      throw new UnacceptableDocumentException("proof_did_unknown", "DID associated with the document is not available", Map.of("did", didId));
+      throw new UnacceptableDocumentException("proof_did_unknown", "DID associated with the document is not available", mapOf("did", didId));
     }
 
     // Look for the key in the DID
@@ -102,7 +104,7 @@ public class VerifyContext extends SharedContext {
 
     // not matched
     throw new UnacceptableDocumentException("proof_verification_method_not_matched", "No such verification method in specified DID",
-        Map.of("verificationMethod", method)
+        mapOf("verificationMethod", method)
     );
   }
 
@@ -193,11 +195,11 @@ public class VerifyContext extends SharedContext {
       throw new UnacceptableDocumentException(
           "proof_wrong_signature_method",
           "Declared JWS Signature algorithm does not match the declared verification method",
-          Map.of("errorMessage", e.toString(), "error", e)
+          mapOf("errorMessage", e.toString(), "error", e)
       );
     } catch (SignatureException e) {
       throw new UnacceptableDocumentException("proof_invalid_signature", "Invalid signature",
-          Map.of("errorMessage", e.toString(), "error", e)
+          mapOf("errorMessage", e.toString(), "error", e)
       );
     }
   }

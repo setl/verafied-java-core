@@ -20,6 +20,8 @@
 
 package io.setl.verafied.proof;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -124,7 +126,12 @@ public class VerifyOutput {
     isOk = false;
     this.code = Objects.requireNonNull(code);
     this.message = Objects.requireNonNull(message);
-    this.parameters = (parameters != null) ? Map.copyOf(parameters) : Map.of();
+    if (parameters == null) {
+      this.parameters = Map.of();
+    } else {
+      HashMap<String, Object> map = new HashMap<>(parameters);
+      this.parameters = Collections.unmodifiableMap(map);
+    }
   }
 
 

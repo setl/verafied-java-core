@@ -22,6 +22,8 @@ package io.setl.verafied.proof;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import static io.setl.verafied.UnacceptableDocumentException.mapOf;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -115,7 +117,7 @@ public class CanonicalJsonWithJws implements Prover {
       throw new UnacceptableDocumentException(
           "proof_incorrect_type",
           "Proof type is not \"CanonicalJsonWithJws\"",
-          Map.of("expected", "CanonicalJsonWithJws", "actual", proof.getType())
+          mapOf("expected", "CanonicalJsonWithJws", "actual", proof.getType())
       );
     }
 
@@ -129,7 +131,7 @@ public class CanonicalJsonWithJws implements Prover {
     int dotDotIndex = jws.indexOf("..");
     if (dotDotIndex == -1) {
       throw new UnacceptableDocumentException("proof_jws_not_detached", "JWS value is not <header>..<signature>",
-          Map.of("jws", jws)
+          mapOf("jws", jws)
       );
     }
 
@@ -141,7 +143,7 @@ public class CanonicalJsonWithJws implements Prover {
     } catch (IllegalArgumentException e) {
       // It wasn't perfect Base 64 URL
       throw new UnacceptableDocumentException("proof_jws_header_bad_base64", "JWS header contains an invalid Base64-URL character",
-          Map.of("header", jws.substring(0, dotDotIndex))
+          mapOf("header", jws.substring(0, dotDotIndex))
       );
     }
 
@@ -153,14 +155,14 @@ public class CanonicalJsonWithJws implements Prover {
       jsonObject = reader.readObject();
     } catch (JsonException e) {
       throw new UnacceptableDocumentException("proof_jws_header_bad_json", "JWS header contains invalid JSON",
-          Map.of("badJson", new String(b64, UTF_8), "errorMessage", e.toString(), "error", e)
+          mapOf("badJson", new String(b64, UTF_8), "errorMessage", e.toString(), "error", e)
       );
     }
 
     // For a detached payload, the header must specify "b64:false"
     if (!JsonValue.FALSE.equals(jsonObject.get("b64"))) {
       throw new UnacceptableDocumentException("proof_jws_header_missing_b64", "JWS header does not specify b64=false",
-          Map.of("parsedHeader", jsonObject)
+          mapOf("parsedHeader", jsonObject)
       );
     }
 
@@ -168,7 +170,7 @@ public class CanonicalJsonWithJws implements Prover {
     String headerAlg = jsonObject.getString("alg", null);
     if (headerAlg == null || headerAlg.isEmpty()) {
       throw new UnacceptableDocumentException("proof_jws_header_missing_alg", "JWS header does not specify an 'alg'",
-          Map.of("parsedHeader", jsonObject)
+          mapOf("parsedHeader", jsonObject)
       );
     }
 
@@ -178,13 +180,13 @@ public class CanonicalJsonWithJws implements Prover {
       inputAlg = SigningAlgorithm.get(headerAlg);
     } catch (IllegalArgumentException e) {
       throw new UnacceptableDocumentException("proof_jws_header_invalid_alg", "JWS header does not specify a valid 'alg'",
-          Map.of("alg", headerAlg)
+          mapOf("alg", headerAlg)
       );
     }
     if (inputAlg == SigningAlgorithm.NONE) {
       // "NONE" is not a valid value
       throw new UnacceptableDocumentException("proof_jws_header_alg_is_none", "JWS header specifies NONE for 'alg'",
-          Map.of("alg", headerAlg)
+          mapOf("alg", headerAlg)
       );
     }
     context.setAlgorithm(inputAlg);
@@ -195,7 +197,7 @@ public class CanonicalJsonWithJws implements Prover {
       context.setAllegedSignature(Base64.getUrlDecoder().decode(jws.substring(dotDotIndex + 2)));
     } catch (IllegalArgumentException e) {
       throw new UnacceptableDocumentException("proof_jws_signature_bad_base64", "JWS Signature contains an invalid Base64-URL character",
-          Map.of("signature", jws.substring(dotDotIndex + 2))
+          mapOf("signature", jws.substring(dotDotIndex + 2))
       );
     }
 

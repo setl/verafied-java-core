@@ -21,6 +21,7 @@
 package io.setl.verafied.proof;
 
 import static io.setl.verafied.CredentialConstants.logSafe;
+import static io.setl.verafied.UnacceptableDocumentException.mapOf;
 
 import java.security.GeneralSecurityException;
 import java.util.HashSet;
@@ -64,7 +65,7 @@ public class ProvableApi {
   public static Set<String> getTypes(JsonValue types, String type, Object id) throws UnacceptableDocumentException {
     if (types == null) {
       String message = String.format("%s %s NOT verified as it does not specify any types", type, logSafe(String.valueOf(id)));
-      throw new UnacceptableDocumentException("document_has_no_types", message, Map.of(DOCUMENT_TYPE, type, "id", id));
+      throw new UnacceptableDocumentException("document_has_no_types", message, mapOf(DOCUMENT_TYPE, type, "id", id));
     }
 
     Set<String> typeSet;
@@ -75,7 +76,7 @@ public class ProvableApi {
     if (types.getValueType() != ValueType.ARRAY) {
       String message = String.format("%s %s NOT verified as its type specification is a %s", type, logSafe(String.valueOf(id)), types.getValueType());
       throw new UnacceptableDocumentException("document_bad_type_specifier", message,
-          Map.of(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, types.getValueType())
+          mapOf(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, types.getValueType())
       );
     }
 
@@ -85,13 +86,13 @@ public class ProvableApi {
       if (jv == null) {
         // The SETL Canonical JSON provider will never return a null for a JsonArray member
         String message = String.format("%s %s NOT verified as its type specification contains a null", type, logSafe(String.valueOf(id)));
-        throw new UnacceptableDocumentException("document_contains_null_type", message, Map.of(DOCUMENT_TYPE, type, "id", id));
+        throw new UnacceptableDocumentException("document_contains_null_type", message, mapOf(DOCUMENT_TYPE, type, "id", id));
       }
 
       if (jv.getValueType() != ValueType.STRING) {
         String message = String.format("%s %s NOT verified as its type specification contains a %s", type, logSafe(String.valueOf(id)), jv.getValueType());
         throw new UnacceptableDocumentException("document_bad_contained_type_specifier", message,
-            Map.of(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, jv.getValueType())
+            mapOf(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, jv.getValueType())
         );
       }
 
@@ -111,7 +112,7 @@ public class ProvableApi {
     JsonString ctxtString = null;
     if (ctxtValue == null) {
       String message = String.format("%s %s does not specify an \"@context\" value", type, logSafe(String.valueOf(id)));
-      throw new UnacceptableDocumentException("document_context_missing", message, Map.of(DOCUMENT_TYPE, type, "id", id));
+      throw new UnacceptableDocumentException("document_context_missing", message, mapOf(DOCUMENT_TYPE, type, "id", id));
     }
 
     if (ctxtValue.getValueType() == ValueType.STRING) {
@@ -129,7 +130,7 @@ public class ProvableApi {
     } else {
       String message = String.format("%s %s does not specify a valid \"@context\" value", type, logSafe(String.valueOf(id)));
       throw new UnacceptableDocumentException("document_context_bad_type", message,
-          Map.of(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, ctxtValue.getValueType())
+          mapOf(DOCUMENT_TYPE, type, "id", id, JSON_TYPE, ctxtValue.getValueType())
       );
     }
 
@@ -139,7 +140,7 @@ public class ProvableApi {
           type, logSafe(String.valueOf(id)), logSafe(ctxtValue.toString())
       );
       throw new UnacceptableDocumentException("document_context_w3c_must_be_first", message,
-          Map.of(DOCUMENT_TYPE, type, "id", id, "context", ctxtValue)
+          mapOf(DOCUMENT_TYPE, type, "id", id, "context", ctxtValue)
       );
     }
   }
@@ -156,7 +157,7 @@ public class ProvableApi {
     // The input must contain a 'proof'
     if (myProof == null) {
       String message = String.format("%s %s has not been proved", type, logSafe(String.valueOf(id)));
-      throw new UnacceptableDocumentException("document_no_proof", message, Map.of(DOCUMENT_TYPE, type, "id", id));
+      throw new UnacceptableDocumentException("document_no_proof", message, mapOf(DOCUMENT_TYPE, type, "id", id));
     }
 
     JsonObject input = (JsonObject) JsonConvert.toJson(document);
@@ -168,7 +169,7 @@ public class ProvableApi {
       String message = String.format("%s %s proof did not verify", type, logSafe(String.valueOf(id)));
       throw new UnacceptableDocumentException(
           "document_proof_error", message,
-          Map.of(DOCUMENT_TYPE, type, "id", id, "errorMessage", e.toString(), "error", e)
+          mapOf(DOCUMENT_TYPE, type, "id", id, "errorMessage", e.toString(), "error", e)
       );
     }
   }
@@ -188,7 +189,7 @@ public class ProvableApi {
     if (types == null) {
       String message = String.format("%s %s NOT verified as it does not specify any types", type, logSafe(String.valueOf(id)));
       throw new UnacceptableDocumentException("document_has_no_types_2", message,
-          Map.of(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
+          mapOf(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
       );
     }
 
@@ -198,7 +199,7 @@ public class ProvableApi {
           type, logSafe(String.valueOf(id)), match, logSafe(types.toString())
       );
       throw new UnacceptableDocumentException("document_type_missing", message,
-          Map.of(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
+          mapOf(DOCUMENT_TYPE, type, "id", id, "requiredType", match)
       );
     }
   }
