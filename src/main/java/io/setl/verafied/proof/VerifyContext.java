@@ -28,7 +28,6 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import io.setl.verafied.UnacceptableDocumentException;
@@ -195,11 +194,11 @@ public class VerifyContext extends SharedContext {
       throw new UnacceptableDocumentException(
           "proof_wrong_signature_method",
           "Declared JWS Signature algorithm does not match the declared verification method",
-          mapOf("errorMessage", e.toString(), "error", e)
+          mapOf("errorMessage", e.toString()), e
       );
     } catch (SignatureException e) {
       throw new UnacceptableDocumentException("proof_invalid_signature", "Invalid signature",
-          mapOf("errorMessage", e.toString(), "error", e)
+          mapOf("errorMessage", e.toString()), e
       );
     }
   }

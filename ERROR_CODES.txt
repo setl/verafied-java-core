@@ -48,7 +48,6 @@ document_proof_error            the document's proof could not be verified becau
         documentType            the document's type
         id                      the document's ID
         errorMessage            the exception's message
-        error                   the exception
 
 document_type_missing           the document was required to specify a given type, but did not.
         documentType            the document's type
@@ -72,11 +71,9 @@ proof_incorrect_signature       Incorrect signature
 
 proof_wrong_signature_method    Declared JWS Signature algorithm does not match the declared verification method and triggered a Java InvalidKeyException
         errorMessage            the exception's message
-        error                   the exception
         
 proof_invalid_signature         An invalid signature which triggered a Java SignatureException
         errorMessage            the exception's message
-        error                   the exception
         
 proof_incorrect_type            The proof type does not match the that prover was invoked to verify it
         expected                the expected proof type (e.g. 'CanonicalJsonWithJws')
@@ -94,7 +91,6 @@ proof_jws_header_bad_base64     JWS header contains an invalid Base64-URL charac
 proof_jws_header_bad_json       JWS header contains invalid JSON
         badJson                 The header text that could not be parsed as JSON
         errorMessage            The error message from the JSON parser
-        error                   The error from the JSON parser
 
 proof_jws_header_missing_b64    JWS header does not specify b64=false, which is required for detached JWS
         parsedHeader            The header as JsonObject

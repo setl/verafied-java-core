@@ -169,7 +169,7 @@ public class ProvableApi {
       String message = String.format("%s %s proof did not verify", type, logSafe(String.valueOf(id)));
       throw new UnacceptableDocumentException(
           "document_proof_error", message,
-          mapOf(DOCUMENT_TYPE, type, "id", id, "errorMessage", e.toString(), "error", e)
+          mapOf(DOCUMENT_TYPE, type, "id", id, "errorMessage", e.toString()),e
       );
     }
   }

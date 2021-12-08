@@ -32,7 +32,6 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
-import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -155,7 +154,7 @@ public class CanonicalJsonWithJws implements Prover {
       jsonObject = reader.readObject();
     } catch (JsonException e) {
       throw new UnacceptableDocumentException("proof_jws_header_bad_json", "JWS header contains invalid JSON",
-          mapOf("badJson", new String(b64, UTF_8), "errorMessage", e.toString(), "error", e)
+          mapOf("badJson", new String(b64, UTF_8), "errorMessage", e.toString()), e
       );
     }
 

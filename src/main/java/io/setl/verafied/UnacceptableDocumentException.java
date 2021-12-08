@@ -168,7 +168,19 @@ public class UnacceptableDocumentException extends Exception {
    * @param parameters parameters associated with this exception
    */
   public UnacceptableDocumentException(String code, String message, Map<String, Object> parameters) {
-    super(message);
+    this(code, message, parameters, null);
+  }
+
+
+  /**
+   * New instance.
+   *
+   * @param code       the error code.
+   * @param message    a sample message
+   * @param parameters parameters associated with this exception
+   */
+  public UnacceptableDocumentException(String code, String message, Map<String, Object> parameters, Throwable cause) {
+    super(message, cause);
     this.code = code;
     if (parameters == null || parameters.isEmpty()) {
       this.parameters = Map.of();
